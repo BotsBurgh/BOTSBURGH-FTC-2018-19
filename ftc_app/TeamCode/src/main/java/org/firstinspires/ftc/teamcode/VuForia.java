@@ -119,6 +119,9 @@ public class VuForia extends LinearOpMode {
     private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
 
     private OpenGLMatrix lastLocation = null;
+
+    // Random comment
+
     private boolean targetVisible = false;
 
     /**
