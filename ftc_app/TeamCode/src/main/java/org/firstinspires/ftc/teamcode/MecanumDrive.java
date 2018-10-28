@@ -20,17 +20,15 @@ public class MecanumDrive extends LinearOpMode {
 
         waitForStart();
         while(opModeIsActive()) {
-            // Determine magnitude of motion
-            double r = Math.hypot(gamepad1.left_stick_x, gamepad1.left_stick_y);
-            // Determine angle from x and y then subtracts pi/4
-            double angle = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x) ;
+
+            double x1 = gamepad1.left_stick_x;
+            double y1 = gamepad1.left_stick_y;
             double rotation = gamepad1.right_stick_x;
-
-
-            double fl = r*Math.cos(angle)+rotation;
-            double fr = r*Math.sin(angle)-rotation;
-            double bl = r*Math.sin(angle)+rotation;
-            double br = r*Math.cos(angle)-rotation;
+            
+            double fl = y1+x1+rotation;
+            double fr = y1 - x1-rotation;
+            double bl = y1- x1+rotation;
+            double br = y1+x1-rotation;
 
             frontLeft.setPower(fl);
             frontRight.setPower(fr);
