@@ -29,8 +29,8 @@ public class MecanumDrive extends LinearOpMode {
 
             double fl = r*Math.cos(angle)+rotation;
             double fr = r*Math.sin(angle)-rotation;
-            double bl = r*Math.cos(angle)+rotation;
-            double br = r*Math.sin(angle)-rotation;
+            double bl = r*Math.sin(angle)+rotation;
+            double br = r*Math.cos(angle)-rotation;
 
             frontLeft.setPower(fl);
             frontRight.setPower(fr);
