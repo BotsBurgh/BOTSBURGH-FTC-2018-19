@@ -21,7 +21,7 @@ public class Driver extends LinearOpMode {
         backLeft = hardwareMap.get(DcMotor.class,"bl");
         backRight = hardwareMap.get(DcMotor.class,"br");
         gyro = hardwareMap.get(BNO055IMU.class, "gyro");
-        Movement movement = new Movement(frontLeft, backLeft, frontRight, backRight, gyro);
+        Movement movement = new Movement(frontLeft, frontRight, backLeft, backRight, gyro);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -40,7 +40,7 @@ public class Driver extends LinearOpMode {
             rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
 
             // Send calculated power to wheels
-            movement.move(leftPower, rightPower);
+            movement.move(leftPower, -rightPower);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());

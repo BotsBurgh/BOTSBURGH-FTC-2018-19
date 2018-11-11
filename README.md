@@ -10,6 +10,11 @@ Under `ftc_app`, you can find our code.
 
 ## Changelog
 
+### 2018-11-11 v3
+
+Modified `Driver.java` to fix constructor initialization.
+Jerry-Rigged `Driver.java` to fix wire misconfiguration.
+
 ### 2018-11-11 v2
 
 Added `Movement.java` and `Driver.java`
