@@ -10,6 +10,12 @@ Under `ftc_app`, you can find our code.
 
 ## Changelog
 
+### 2018-11-11 v2
+
+Added `Movement.java` and `Driver.java`
+`Movement.java` has the code for moving around.
+`Driver.java` is the wrapper for `Movement.java`
+
 ### 2018-11-11 v1
 
 Modified `README.md` and added `Controls.txt`
