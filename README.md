@@ -10,6 +10,11 @@ Under `ftc_app`, you can find our code.
 
 ## Changelog
 
+### 2018-11-11 v4
+
+Changed variable scheme to be more clear
+Added JavaDoc
+
 ### 2018-11-11 v3
 
 Modified `Driver.java` to fix constructor initialization.

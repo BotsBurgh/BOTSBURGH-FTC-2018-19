@@ -33,79 +33,117 @@ import java.util.Locale;
 public class Movement {
     private double TURN_POWER  = 0.4;
     private double DRIVE_POWER = 0.6;
-    private DcMotor lf, rf, lb, rb;
+    private DcMotor motorFL, motorFR, motorBL, motorBR;
     private BNO055IMU gyro;
-    // TODO: Add JavaDoc for constructor
-    Movement(DcMotor lf, DcMotor rf, DcMotor lb, DcMotor rb, BNO055IMU gyro) {
-        this.lf   = lf;
-        this.rf   = rf;
-        this.lb   = lb;
-        this.rb   = rb;
+
+    /**
+     * Initialize the class
+     * @param motorFL The front left motor
+     * @param motorFR The front right motor
+     * @param motorBL The back left motor
+     * @param motorBR The back right motor
+     * @param gyro The BNO055IMU gyroscope
+     */
+    Movement(DcMotor motorFL, DcMotor motorFR, DcMotor motorBL, DcMotor motorBR, BNO055IMU gyro) {
+        this.motorFL   = motorFL;
+        this.motorFR   = motorFR;
+        this.motorBL   = motorBL;
+        this.motorBR   = motorBR;
         this.gyro = gyro;
     }
+
     // TODO: Add JavaDoc for moveEnc
+
+    /**
+     * Moves based on the encoder
+     * @param inches How much to move forward or backward in inches
+     */
     public void moveEnc(int inches) {
-        lf.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rf.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lb.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rb.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lf.setTargetPosition(inches);
-        rf.setTargetPosition(inches);
-        lb.setTargetPosition(inches);
-        rb.setTargetPosition(inches);
-        lf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        lb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFL.setTargetPosition(inches);
+        motorFR.setTargetPosition(inches);
+        motorBL.setTargetPosition(inches);
+        motorBR.setTargetPosition(inches);
+        motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         if (inches < 0) {
-            lf.setPower(DRIVE_POWER);
-            rf.setPower(DRIVE_POWER);
-            lb.setPower(DRIVE_POWER);
-            rb.setPower(DRIVE_POWER);
+            motorFL.setPower(DRIVE_POWER);
+            motorFR.setPower(DRIVE_POWER);
+            motorBL.setPower(DRIVE_POWER);
+            motorBR.setPower(DRIVE_POWER);
         } else if (inches > 0) {
-            lf.setPower(-DRIVE_POWER);
-            rf.setPower(-DRIVE_POWER);
-            lb.setPower(-DRIVE_POWER);
-            rb.setPower(-DRIVE_POWER);
+            motorFL.setPower(-DRIVE_POWER);
+            motorFR.setPower(-DRIVE_POWER);
+            motorBL.setPower(-DRIVE_POWER);
+            motorBR.setPower(-DRIVE_POWER);
         } else {
-            lf.setPower(0);
-            rf.setPower(0);
-            lb.setPower(0);
-            rb.setPower(0);
+            motorFL.setPower(0);
+            motorFR.setPower(0);
+            motorBL.setPower(0);
+            motorBR.setPower(0);
         }
     }
-    // TODO: Add JavaDoc for turn
+
+    /**
+     * Turns the robot with the gyroscope
+     * @param angles Turns the robot with an Orientation object
+     */
     public void turn(Orientation angles) {
         gyro.startAccelerationIntegration(new Position(), new Velocity(), 1000);
         Orientation current = gyro.getAngularOrientation();
         if (current.firstAngle > angles.firstAngle) {
             while (current.firstAngle != angles.firstAngle) {
-                lf.setPower(TURN_POWER);
-                rf.setPower(-TURN_POWER);
-                lb.setPower(TURN_POWER);
-                rb.setPower(-TURN_POWER);
+                motorFL.setPower(TURN_POWER);
+                motorFR.setPower(-TURN_POWER);
+                motorBL.setPower(TURN_POWER);
+                motorBR.setPower(-TURN_POWER);
             }
         } else if (current.firstAngle < angles.firstAngle) {
             while (current.firstAngle != angles.firstAngle) {
-                lf.setPower(-TURN_POWER);
-                rf.setPower(TURN_POWER);
-                lb.setPower(-TURN_POWER);
-                rb.setPower(TURN_POWER);
+                motorFL.setPower(-TURN_POWER);
+                motorFR.setPower(TURN_POWER);
+                motorBL.setPower(-TURN_POWER);
+                motorBR.setPower(TURN_POWER);
             }
         } else {
-            lf.setPower(0);
-            rf.setPower(0);
-            lb.setPower(0);
-            rb.setPower(0);
+            motorFL.setPower(0);
+            motorFR.setPower(0);
+            motorBL.setPower(0);
+            motorBR.setPower(0);
         }
 
     }
-    // TODO: Add JavaDoc for move
+
+    /**
+     * Basic movement with a left and right side to move. Best for tank drives or POV Drives
+     * @param lpower The power to give to the left side
+     * @param rpower The power to give to the right side
+     */
     public void move(double lpower, double rpower) {
-        lf.setPower(lpower);
-        rf.setPower(rpower);
-        lb.setPower(lpower);
-        rb.setPower(rpower);
+        motorFL.setPower(lpower);
+        motorFR.setPower(rpower);
+        motorBL.setPower(lpower);
+        motorBR.setPower(rpower);
+    }
+    // TODO: Add JavaDoc for quadMove
+
+    /**
+     * Moves each of the four motors individually. Best for Mecanum drives.
+     * @param flPower Power to the front left wheel
+     * @param frPower Power to the front right wheel
+     * @param blPower Power to the back left wheel
+     * @param brPower Power to the back right wheel
+     */
+    public void quadMove(double flPower, double frPower, double blPower, double brPower) {
+        motorFL.setPower(flPower);
+        motorFR.setPower(frPower);
+        motorBL.setPower(blPower);
+        motorBR.setPower(brPower);
     }
     //----------------------------------------------------------------------------------------------
     // Formatting
@@ -115,7 +153,7 @@ public class Movement {
         return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
     }
 
-    String formatDegrees(double degrees){
+    String formatDegrees(double degrees) {
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
 
