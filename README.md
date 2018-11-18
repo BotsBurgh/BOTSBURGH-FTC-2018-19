@@ -10,6 +10,10 @@ Under `ftc_app`, you can find our code.
 
 ## Changelog
 
+### 2018-11-18 v1
+
+Created a basic framework of the main Autonomous file. The autonomous code will be added there later.
+
 ### 2018-11-11 v4
 
 Changed variable scheme to be more clear
