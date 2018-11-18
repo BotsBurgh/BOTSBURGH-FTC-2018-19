@@ -32,10 +32,10 @@ public class MecanumDrive extends LinearOpMode {
             double y1 = gamepad1.left_stick_y;
             double rotation = gamepad1.right_stick_x;
 
-            double flPower = y1+x1+rotation;
+            double flPower = y1 + x1+rotation;
             double frPower = y1 - x1-rotation;
-            double blPower = y1- x1+rotation;
-            double brPower = y1+x1-rotation;
+            double blPower = y1 - x1+rotation;
+            double brPower = y1 + x1-rotation;
 
             movement.quadMove(flPower, frPower, blPower, brPower);
         }
