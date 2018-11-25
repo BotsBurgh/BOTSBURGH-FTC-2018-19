@@ -36,7 +36,7 @@ public class Movement {
     private double DRIVE_POWER = 0.6;
     private DcMotor motorFL, motorFR, motorBL, motorBR;
     private BNO055IMU gyro;
-    private CRServo servoElevator;
+    private CRServo servoElevator0, servoElevator1, servoElevator2, servoElevator3, servoElevatorWheel;
 
     /**
      * Initialize the class
@@ -51,15 +51,34 @@ public class Movement {
         this.motorFR   = motorFR;
         this.motorBL   = motorBL;
         this.motorBR   = motorBR;
-        this.gyro = gyro;
+        this.gyro      = gyro;
     }
-    Movement(DcMotor motorFL, DcMotor motorFR, DcMotor motorBL, DcMotor motorBR, BNO055IMU gyro, CRServo elevator) {
+
+    /**
+     * Initialize the class with the elevator functionality
+     * @param motorFL The front left motor
+     * @param motorFR The front right motor
+     * @param motorBL The back left motor
+     * @param motorBR The back right motor
+     * @param gyro The BNO055IMU gyroscope
+     * @param servoElevator0 The base servo motors
+     * @param servoElevator1 First servos on the arm
+     * @param servoElevator2 Second servos on the arm
+     * @param servoElevator3 Third servos on the arm
+     * @param servoElevatorWheel The intake wheels
+     */
+    Movement(DcMotor motorFL, DcMotor motorFR, DcMotor motorBL, DcMotor motorBR, BNO055IMU gyro, 
+    CRServo servoElevator0, CRServo servoElevator1, CRServo servoElevator2, CRServo servoElevator3, CRServo servoElevatorWheel) {
         this.motorFL   = motorFL;
         this.motorFR   = motorFR;
         this.motorBL   = motorBL;
         this.motorBR   = motorBR;
         this.gyro      = gyro;
-        this.servoElevator  = elevator;
+        this.servoElevator0      = servoElevator0;
+        this.servoElevator1      = servoElevator1;
+        this.servoElevator2      = servoElevator2;
+        this.servoElevator3      = servoElevator3;
+        this.servoElevatorWheel  = servoElevatorWheel;
     }
 
 
@@ -156,7 +175,7 @@ public class Movement {
 
     // TODO: Elevator + JavaDoc
     public void elevator(double speed) {
-        servoElevator.setPower(speed);
+        // servoElevator.setPower(speed);
     }
     //----------------------------------------------------------------------------------------------
     // Formatting
