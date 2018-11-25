@@ -33,12 +33,15 @@ import org.firstinspires.ftc.robotcore.internal.android.dex.util.Unsigned;
 
 import java.util.Locale;
 
+import static android.os.SystemClock.sleep;
+
 public class Movement {
     private double TURN_POWER  = 0.4;
     private double DRIVE_POWER = 0.6;
     private DcMotor motorFL, motorFR, motorBL, motorBR;
     private BNO055IMU gyro;
     private CRServo servoElevator0, servoElevator1, servoElevator2, servoElevator3, servoElevatorWheel;
+    private int SLEEP_MS = 100;
 
     /**
      * Initialize the class
@@ -176,9 +179,11 @@ public class Movement {
             if (current<target) {
                 current+=increment;
                 servo.setPosition(current);
+                sleep(SLEEP_MS);
             } else if (current>target) {
                 current-=increment;
                 servo.setPosition(current);
+                sleep(SLEEP_MS);
             } else {
                 break;
             }
