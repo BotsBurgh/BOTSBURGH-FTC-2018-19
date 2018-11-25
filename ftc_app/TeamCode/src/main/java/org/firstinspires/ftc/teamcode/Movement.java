@@ -17,6 +17,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.Func;
@@ -35,6 +36,7 @@ public class Movement {
     private double DRIVE_POWER = 0.6;
     private DcMotor motorFL, motorFR, motorBL, motorBR;
     private BNO055IMU gyro;
+    private CRServo servoElevator;
 
     /**
      * Initialize the class
@@ -51,8 +53,15 @@ public class Movement {
         this.motorBR   = motorBR;
         this.gyro = gyro;
     }
+    Movement(DcMotor motorFL, DcMotor motorFR, DcMotor motorBL, DcMotor motorBR, BNO055IMU gyro, CRServo elevator) {
+        this.motorFL   = motorFL;
+        this.motorFR   = motorFR;
+        this.motorBL   = motorBL;
+        this.motorBR   = motorBR;
+        this.gyro      = gyro;
+        this.servoElevator  = elevator;
+    }
 
-    // TODO: Add JavaDoc for moveEnc
 
     /**
      * Moves based on the encoder
@@ -130,7 +139,6 @@ public class Movement {
         motorBL.setPower(lpower);
         motorBR.setPower(rpower);
     }
-    // TODO: Add JavaDoc for quadMove
 
     /**
      * Moves each of the four motors individually. Best for Mecanum drives.
@@ -144,6 +152,11 @@ public class Movement {
         motorFR.setPower(frPower);
         motorBL.setPower(blPower);
         motorBR.setPower(brPower);
+    }
+
+    // TODO: Elevator + JavaDoc
+    public void elevator(double speed) {
+        servoElevator.setPower(speed);
     }
     //----------------------------------------------------------------------------------------------
     // Formatting
