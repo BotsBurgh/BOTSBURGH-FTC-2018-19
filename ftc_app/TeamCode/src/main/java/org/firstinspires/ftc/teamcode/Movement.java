@@ -19,6 +19,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
@@ -28,6 +29,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import org.firstinspires.ftc.robotcore.internal.android.dex.util.Unsigned;
 
 import java.util.Locale;
 
@@ -157,6 +159,30 @@ public class Movement {
         motorFR.setPower(rpower);
         motorBL.setPower(lpower);
         motorBR.setPower(rpower);
+    }
+
+    // TODO: Test this function
+
+    /**
+     * Moves servos based on speed
+     * @param servo The servo to move
+     * @param target The end location
+     * @param speed How fast (percent). Must be positive
+     */
+    public void servoMove(Servo servo, double target, double speed) {
+        double increment = 1.0-speed;
+        double current=servo.getPosition();
+        while (current!=target) {
+            if (current<target) {
+                current+=increment;
+                servo.setPosition(current);
+            } else if (current>target) {
+                current-=increment;
+                servo.setPosition(current);
+            } else {
+                break;
+            }
+        }
     }
 
     /**
