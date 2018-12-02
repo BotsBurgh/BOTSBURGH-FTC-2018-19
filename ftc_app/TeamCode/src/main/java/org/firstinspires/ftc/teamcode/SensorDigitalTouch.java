@@ -68,6 +68,8 @@ public class SensorDigitalTouch extends LinearOpMode {
         digitalTouch = hardwareMap.get(RevTouchSensor.class, "t1");
 
         // set the digital channel to input.
+        digitalTouch.resetDeviceConfigurationForOpMode();
+        digitalTouch.close();
 
         // wait for the start button to be pressed.
         waitForStart();
@@ -75,7 +77,6 @@ public class SensorDigitalTouch extends LinearOpMode {
         // while the op mode is active, loop and read the light levels.
         // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive()) {
-
             // send the info back to driver station using telemetry function.
             // if the digital channel returns true it's HIGH and the button is unpressed.
             telemetry.addData("Digital Touch", digitalTouch.isPressed());
