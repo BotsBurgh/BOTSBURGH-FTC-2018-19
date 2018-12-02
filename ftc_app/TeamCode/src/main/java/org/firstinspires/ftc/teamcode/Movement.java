@@ -40,7 +40,9 @@ public class Movement {
     private double DRIVE_POWER = 0.6;
     private DcMotor motorFL, motorFR, motorBL, motorBR;
     private BNO055IMU gyro;
-    private CRServo servoElevator0, servoElevator1, servoElevator2, servoElevator3, servoElevatorWheel;
+    private CRServo servoElevator0L, servoElevator0R, servoElevator1L, servoElevator1R,
+            servoElevator2L, servoElevator2R, servoElevator3L, servoElevator3R,
+            servoElevatorWheelL, servoElevatorWheelR;
     private int SLEEP_MS = 100;
 
     /**
@@ -61,29 +63,31 @@ public class Movement {
 
     /**
      * Initialize the class with the elevator functionality
-     * @param motorFL The front left motor
-     * @param motorFR The front right motor
-     * @param motorBL The back left motor
-     * @param motorBR The back right motor
-     * @param gyro The BNO055IMU gyroscope
-     * @param servoElevator0 The base servo motors
-     * @param servoElevator1 First servos on the arm
-     * @param servoElevator2 Second servos on the arm
-     * @param servoElevator3 Third servos on the arm
-     * @param servoElevatorWheel The intake wheels
+     * @param servoElevator0L The left base servo motor
+     * @param servoElevator1L First left servo on the arm
+     * @param servoElevator2L Second left servo on the arm
+     * @param servoElevator3L Third left servo on the arm
+     * @param servoElevator0R The right base servo motors
+     * @param servoElevator1R First right servo on the arm
+     * @param servoElevator2R Second right servo on the arm
+     * @param servoElevator3R Third right servo on the arm
+     * @param servoElevatorWheelL The left intake wheel
+     * @param servoElevatorWheelR The right intake wheel
      */
-    Movement(DcMotor motorFL, DcMotor motorFR, DcMotor motorBL, DcMotor motorBR, BNO055IMU gyro, 
-    CRServo servoElevator0, CRServo servoElevator1, CRServo servoElevator2, CRServo servoElevator3, CRServo servoElevatorWheel) {
-        this.motorFL   = motorFL;
-        this.motorFR   = motorFR;
-        this.motorBL   = motorBL;
-        this.motorBR   = motorBR;
-        this.gyro      = gyro;
-        this.servoElevator0      = servoElevator0;
-        this.servoElevator1      = servoElevator1;
-        this.servoElevator2      = servoElevator2;
-        this.servoElevator3      = servoElevator3;
-        this.servoElevatorWheel  = servoElevatorWheel;
+    Movement(CRServo servoElevator0L, CRServo servoElevator0R, CRServo servoElevator1L,
+             CRServo servoElevator1R, CRServo servoElevator2L, CRServo servoElevator2R,
+             CRServo servoElevator3L, CRServo servoElevator3R, CRServo servoElevatorWheelL,
+             CRServo servoElevatorWheelR) {
+        this.servoElevator0L      = servoElevator0L;
+        this.servoElevator0R      = servoElevator0R;
+        this.servoElevator1L      = servoElevator1L;
+        this.servoElevator1R      = servoElevator1R;
+        this.servoElevator2L      = servoElevator2L;
+        this.servoElevator2R      = servoElevator2R;
+        this.servoElevator3L      = servoElevator3L;
+        this.servoElevator3R      = servoElevator3R;
+        this.servoElevatorWheelL  = servoElevatorWheelL;
+        this.servoElevatorWheelR  = servoElevatorWheelR;
     }
 
 
@@ -173,7 +177,7 @@ public class Movement {
      * @param speed How fast (percent). Must be positive
      */
     public void servoMove(Servo servo, double target, double speed) {
-        double increment = 1.0-speed;
+        double increment = 1.0-Math.abs(speed);
         double current=servo.getPosition();
         while (current!=target) {
             if (current<target) {
