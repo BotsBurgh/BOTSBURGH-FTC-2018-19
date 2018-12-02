@@ -59,13 +59,13 @@ public class SensorDigitalTouch extends LinearOpMode {
      * The lower (first) pin stays unconnected.*
      */
 
-    TouchSensor digitalTouch;  // Hardware Device Object
+    RevTouchSensor digitalTouch;  // Hardware Device Object
 
     @Override
     public void runOpMode() {
 
         // get a reference to our digitalTouch object.
-        digitalTouch = hardwareMap.get(TouchSensor.class, "t1");
+        digitalTouch = hardwareMap.get(RevTouchSensor.class, "t1");
 
         // set the digital channel to input.
 
