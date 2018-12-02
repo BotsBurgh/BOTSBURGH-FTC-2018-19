@@ -29,14 +29,10 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import android.text.method.Touch;
-
-import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 
 /*
  * This is an example LinearOpMode that shows how to use
@@ -59,17 +55,16 @@ public class SensorDigitalTouch extends LinearOpMode {
      * The lower (first) pin stays unconnected.*
      */
 
-    RevTouchSensor digitalTouch;  // Hardware Device Object
+    DigitalChannel digitalTouch;  // Hardware Device Object
 
     @Override
     public void runOpMode() {
 
         // get a reference to our digitalTouch object.
-        digitalTouch = hardwareMap.get(RevTouchSensor.class, "t1");
+        digitalTouch = hardwareMap.get(DigitalChannel.class, "t1");
 
         // set the digital channel to input.
-        digitalTouch.resetDeviceConfigurationForOpMode();
-        digitalTouch.close();
+        digitalTouch.setMode(DigitalChannel.Mode.INPUT);
 
         // wait for the start button to be pressed.
         waitForStart();
@@ -77,9 +72,15 @@ public class SensorDigitalTouch extends LinearOpMode {
         // while the op mode is active, loop and read the light levels.
         // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive()) {
+
             // send the info back to driver station using telemetry function.
             // if the digital channel returns true it's HIGH and the button is unpressed.
-            telemetry.addData("Digital Touch", digitalTouch.isPressed());
+            if (digitalTouch.getState() == true) {
+                telemetry.addData("Digital Touch", "Is Not Pressed");
+            } else {
+                telemetry.addData("Digital Touch", "Is Pressed");
+            }
+
             telemetry.update();
         }
     }
