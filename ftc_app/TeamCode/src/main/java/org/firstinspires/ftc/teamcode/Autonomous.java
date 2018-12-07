@@ -4,6 +4,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
@@ -54,12 +55,19 @@ RF is Red Far    (Far from the red team's crater)
 
 
 @Disabled
+// Tests
 public class Autonomous extends LinearOpMode {
+    private ElapsedTime runtime = new ElapsedTime();
+    private DcMotor motorFL, motorFR, motorBL, motorBR;
+    private BNO055IMU gyro;
+
+    @Override
     public void runOpMode() {
         // Initialize stuff
         waitForStart();
         while (opModeIsActive()) {
-            // Do the autonomous stuff
+            // Testing encoders
+
 
         }
     }
