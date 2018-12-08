@@ -17,8 +17,10 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Sensors {
+    // TODO: Initialize sensors
     BNO055IMU gyro;
     // Put all sensor stuff in here.
+    // TODO: Constructor + JavaDoc
     Sensors(BNO055IMU gyro) {
         this.gyro = gyro;
     }
