@@ -21,9 +21,9 @@ public class MecanumDrive extends LinearOpMode {
         motorBL = hardwareMap.get(DcMotor.class,"bl");
         motorBR = hardwareMap.get(DcMotor.class,"br");
         gyro = hardwareMap.get(BNO055IMU.class, "gyro");
-        Movement movement = new Movement(motorFL, motorFR, motorBL, motorBR, gyro);
         motorFL.setDirection(DcMotor.Direction.REVERSE);
         motorBL.setDirection(DcMotor.Direction.REVERSE);
+        Movement movement = new Movement(motorFL, motorFR, motorBL, motorBR, gyro);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
