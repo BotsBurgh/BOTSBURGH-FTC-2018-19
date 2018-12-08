@@ -10,6 +10,10 @@ Under `ftc_app`, you can find our code.
 
 ## Changelog
 
+### 2018-12-08 v2
+
+Got the potentiometer to work
+
 ### 2018-12-08 v1
 
 Sped up driver code, added some stuff to do later.
