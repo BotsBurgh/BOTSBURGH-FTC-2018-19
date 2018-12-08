@@ -41,16 +41,14 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "Sensor: Potentiometer", group = "Sensor")
 public class SensorPotentiometer extends LinearOpMode {
-    AnalogInput pot;
-    BNO055IMU gyro;
+    AnalogInput pot; // initialize potentiometer
     @Override
     public void runOpMode() {
-        AnalogInput pot = hardwareMap.get(AnalogInput.class, "pot1");
-        BNO055IMU gyro = hardwareMap.get(BNO055IMU.class, "imu");
-        Sensors sensors = new Sensors(gyro, pot);
+        AnalogInput pot = hardwareMap.get(AnalogInput.class, "pot1"); // Get potentiometer from REV hub
+        Sensors potSensor = new Sensors(pot); // Open other file (Sensors.java)
         waitForStart();
         while(opModeIsActive()) {
-            telemetry.addData(">", sensors.getPot());
+            telemetry.addData(">", potSensor.getPot()); // Get the angle from the other file
             telemetry.update();
         }
     }

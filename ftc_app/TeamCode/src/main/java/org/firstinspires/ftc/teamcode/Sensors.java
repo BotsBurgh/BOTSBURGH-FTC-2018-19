@@ -23,20 +23,20 @@ public class Sensors {
     private static double Vmin = 0.004; // Minimum voltage
 
     private static double Vmax = 3.304; // Maximum voltage
-    // TODO: Initialize sensors
-    BNO055IMU gyro;
-    AnalogInput pot;
+    // TODO: Initialize more sensors
+    BNO055IMU gyro; // Initializes gyroscope
+    AnalogInput pot; // Initializes potentiometer
     // Put all sensor stuff in here.
     // TODO: Constructor + JavaDoc
-    Sensors(BNO055IMU gyro, AnalogInput pot) {
+    Sensors(BNO055IMU gyro, AnalogInput pot) { // Constructor (to use in another file)
         this.gyro = gyro;
         this.pot = pot;
     }
-    Sensors (AnalogInput pot) {
+    Sensors (AnalogInput pot) { // Another constructor
         this.pot = pot;
     }
     public double getPot() {
-        return (POT_MAX/(Vmax-Vmin))*(pot.getVoltage()-Vmin);
+        return (POT_MAX/(Vmax-Vmin))*(pot.getVoltage()-Vmin); // Converts voltage to angle (degrees)
     }
 }
 
