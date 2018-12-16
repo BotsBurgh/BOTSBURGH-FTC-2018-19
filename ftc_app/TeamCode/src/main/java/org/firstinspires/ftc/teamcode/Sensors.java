@@ -18,11 +18,11 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Sensors {
-    private static int POT_MAX = 270; // Max range in degrees
+    public static int POT_MAX = 270; // Max range in degrees
 
-    private static double Vmin = 0.004; // Minimum voltage
+    public static double Vmin = 0.004; // Minimum voltage
 
-    private static double Vmax = 3.304; // Maximum voltage
+    public static double Vmax = 3.304; // Maximum voltage
     // TODO: Initialize more sensors
     BNO055IMU gyro; // Initializes gyroscope
     AnalogInput pot; // Initializes potentiometer

@@ -43,6 +43,8 @@ public class Movement {
     private CRServo servoElevator0L, servoElevator0R, servoElevator1L, servoElevator1R,
             servoElevator2L, servoElevator2R, servoElevator3L, servoElevator3R,
             servoElevatorWheelL, servoElevatorWheelR;
+    private Servo digiServo;
+    private DcMotor armBase;
     private int SLEEP_MS = 100;
 
     /**
@@ -88,6 +90,15 @@ public class Movement {
         this.servoElevator3R      = servoElevator3R;
         this.servoElevatorWheelL  = servoElevatorWheelL;
         this.servoElevatorWheelR  = servoElevatorWheelR;
+    }
+
+    Movement(DcMotor armBase) {
+        this.armBase = armBase;
+
+    }
+
+    Movement(Servo digiServo) {
+        this.digiServo = digiServo;
     }
 
 
@@ -212,15 +223,21 @@ public class Movement {
     public void elevator(double speed) {
         // servoElevator.setPower(speed);
     }
+
+    // TODO: JavaDoc for Digital Servo
+    public void digiMove(double pos) {
+        digiServo.setPosition(pos);
+    }
+
     //----------------------------------------------------------------------------------------------
     // Formatting
     //----------------------------------------------------------------------------------------------
 
-    String formatAngle(AngleUnit angleUnit, double angle) {
+    private String formatAngle(AngleUnit angleUnit, double angle) {
         return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
     }
 
-    String formatDegrees(double degrees) {
+    private String formatDegrees(double degrees) {
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
 
