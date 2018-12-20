@@ -40,10 +40,8 @@ public class Movement {
     private double DRIVE_POWER = 0.6;
     private DcMotor motorFL, motorFR, motorBL, motorBR;
     private BNO055IMU gyro;
-    private CRServo servoElevator0L, servoElevator0R, servoElevator1L, servoElevator1R,
-            servoElevator2L, servoElevator2R, servoElevator3L, servoElevator3R,
-            servoElevatorWheelL, servoElevatorWheelR;
-    private Servo digiServo;
+    private Servo s1, s2, s3;
+    private CRServo wl, wr;
     private DcMotor armBase;
     private int SLEEP_MS = 100;
 
@@ -65,40 +63,14 @@ public class Movement {
 
     /**
      * Initialize the class with the elevator functionality
-     * @param servoElevator0L The left base servo motor
-     * @param servoElevator1L First left servo on the arm
-     * @param servoElevator2L Second left servo on the arm
-     * @param servoElevator3L Third left servo on the arm
-     * @param servoElevator0R The right base servo motors
-     * @param servoElevator1R First right servo on the arm
-     * @param servoElevator2R Second right servo on the arm
-     * @param servoElevator3R Third right servo on the arm
-     * @param servoElevatorWheelL The left intake wheel
-     * @param servoElevatorWheelR The right intake wheel
+     *
      */
-    Movement(CRServo servoElevator0L, CRServo servoElevator0R, CRServo servoElevator1L,
-             CRServo servoElevator1R, CRServo servoElevator2L, CRServo servoElevator2R,
-             CRServo servoElevator3L, CRServo servoElevator3R, CRServo servoElevatorWheelL,
-             CRServo servoElevatorWheelR) {
-        this.servoElevator0L      = servoElevator0L;
-        this.servoElevator0R      = servoElevator0R;
-        this.servoElevator1L      = servoElevator1L;
-        this.servoElevator1R      = servoElevator1R;
-        this.servoElevator2L      = servoElevator2L;
-        this.servoElevator2R      = servoElevator2R;
-        this.servoElevator3L      = servoElevator3L;
-        this.servoElevator3R      = servoElevator3R;
-        this.servoElevatorWheelL  = servoElevatorWheelL;
-        this.servoElevatorWheelR  = servoElevatorWheelR;
-    }
-
-    Movement(DcMotor armBase) {
-        this.armBase = armBase;
-
-    }
-
-    Movement(Servo digiServo) {
-        this.digiServo = digiServo;
+    Movement(Servo s1, Servo s2, Servo s3, CRServo wl, CRServo wr) {
+        this.s1 = s1;
+        this.s2 = s2;
+        this.s3 = s3;
+        this.wl = wl;
+        this.wr = wr;
     }
 
 
@@ -219,14 +191,24 @@ public class Movement {
         motorBR.setPower(brPower);
     }
 
-    // TODO: Elevator + JavaDoc
-    public void elevator(double speed) {
-        // servoElevator.setPower(speed);
+    // TODO: JavaDoc
+    public void armZero() {
+        s1.setPosition(0);
+        s2.setPosition(0);
+        s3.setPosition(0);
     }
 
-    // TODO: JavaDoc for Digital Servo
-    public void digiMove(double pos) {
-        digiServo.setPosition(pos);
+    // TODO: JavaDoc
+    public void armSet(double pos) {
+        s1.setPosition(270-pos);
+        s2.setPosition(pos);
+        s3.setPosition(pos);
+    }
+
+    // TODO: JavaDoc
+    public void armIntake(double speed) {
+        wl.setPower(speed);
+        wr.setPower(speed);
     }
 
     //----------------------------------------------------------------------------------------------

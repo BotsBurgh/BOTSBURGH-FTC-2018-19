@@ -10,6 +10,10 @@ Under `ftc_app`, you can find our code.
 
 ## Changelog
 
+### 2018-12-20 v1
+
+Got some servo stuff + arm to work, still in progress.
+
 ### 2018-12-08 v2
 
 Got the potentiometer to work

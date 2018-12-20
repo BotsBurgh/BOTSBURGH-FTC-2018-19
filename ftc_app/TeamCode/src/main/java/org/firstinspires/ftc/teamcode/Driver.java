@@ -8,7 +8,6 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-@Disabled
 @TeleOp(name = "Driver", group = "Linear OpMode")
 public class Driver extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
