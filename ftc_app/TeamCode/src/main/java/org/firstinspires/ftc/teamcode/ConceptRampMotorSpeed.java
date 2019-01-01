@@ -27,12 +27,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode;
 
+import android.hardware.Sensor;
+
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 /**
  * This OpMode ramps a single motor speed up and down repeatedly until Stop is pressed.
@@ -47,7 +53,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @TeleOp(name = "Concept: Ramp Motor Speed", group = "Concept")
-@Disabled
+
 public class ConceptRampMotorSpeed extends LinearOpMode {
 
     static final double INCREMENT   = 0.01;     // amount to ramp motor each CYCLE_MS cycle
@@ -57,6 +63,10 @@ public class ConceptRampMotorSpeed extends LinearOpMode {
 
     // Define class members
     DcMotor motor;
+    Servo s1,s2,s3;
+    CRServo wl,wr;
+
+
     double  power   = 0;
     boolean rampUp  = true;
 
@@ -64,45 +74,60 @@ public class ConceptRampMotorSpeed extends LinearOpMode {
     @Override
     public void runOpMode() {
 
+        s1 = hardwareMap.get(Servo.class, "s1");
+        s2 = hardwareMap.get(Servo.class, "s2");
+        s3 = hardwareMap.get(Servo.class, "s3");
+        wl = hardwareMap.get(CRServo.class, "wl");
+        wr = hardwareMap.get(CRServo.class, "wr");
+
+        Movement arm = new Movement(s1, s2, s3, wl, wr);
         // Connect to motor (Assume standard left wheel)
         // Change the text in quotes to match any motor name on your robot.
         motor = hardwareMap.get(DcMotor.class, "elev");
 
+        AnalogInput pot = hardwareMap.analogInput.get("potent");
+        Sensors sens = new Sensors(pot);
+        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        wr.setDirection(CRServo.Direction.FORWARD);
+        wl.setDirection(CRServo.Direction.FORWARD);
+        s1.setDirection(Servo.Direction.REVERSE);
+        s2.setDirection(Servo.Direction.FORWARD);
+        s3.setDirection(Servo.Direction.FORWARD);
+
+
+
         // Wait for the start button
         telemetry.addData(">", "Press Start to run Motors." );
         telemetry.update();
+        int pos = 0;
+        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         waitForStart();
 
         // Ramp motor speeds till stop pressed.
         while(opModeIsActive()) {
 
-            // Ramp the motors, according to the rampUp variable.
-            if (rampUp) {
-                // Keep stepping up until we hit the max value.
-                power += INCREMENT ;
-                if (power >= MAX_FWD ) {
-                    power = MAX_FWD;
-                    rampUp = !rampUp;   // Switch ramp direction
-                }
-            }
-            else {
-                // Keep stepping down until we hit the min value.
-                power -= INCREMENT ;
-                if (power <= MAX_REV ) {
-                    power = MAX_REV;
-                    rampUp = !rampUp;  // Switch ramp direction
-                }
+            if(gamepad1.left_bumper) {
+                pos -= 20;
+
+            } else if(gamepad1.right_bumper)  {
+                pos += 20;
+
             }
 
-            // Display the current value
-            telemetry.addData("Motor Power", "%5.2f", power);
-            telemetry.addData(">", "Press Stop to end test." );
+
+            motor.setTargetPosition(pos);
+            motor.setPower(.3);
+
+            telemetry.addData("Height Power", gamepad1.left_stick_x);
+            telemetry.addData("Angle", sens.getPot());
+            telemetry.addData("Expected Position", pos);
+            telemetry.addData("Postition",motor.getCurrentPosition());
             telemetry.update();
-
-            // Set the motor to the new power and pause;
-            motor.setPower(power);
-            sleep(CYCLE_MS);
-            idle();
         }
 
         // Turn off motor and signal done;
