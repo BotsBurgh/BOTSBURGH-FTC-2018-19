@@ -184,7 +184,7 @@ public class Movement {
     // TODO: JavaDoc
     public void armSet(double pos) {
         s1.setPosition(pos);
-        s2.setPosition(pos);
+        s2.setPosition(270-pos);
     }
 
     // TODO: JavaDoc

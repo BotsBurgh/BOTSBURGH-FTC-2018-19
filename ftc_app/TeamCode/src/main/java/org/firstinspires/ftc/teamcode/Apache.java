@@ -48,7 +48,7 @@ public class Apache extends LinearOpMode {
         elev.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         elev.setDirection(DcMotor.Direction.FORWARD);
 
-        Movement arm = new Movement(s1, s2, s3, wl, wr);
+        Movement arm = new Movement(s1, s2, wl);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();

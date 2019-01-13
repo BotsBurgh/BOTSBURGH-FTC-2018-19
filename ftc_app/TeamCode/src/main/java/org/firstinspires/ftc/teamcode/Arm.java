@@ -61,13 +61,13 @@ public class Arm extends LinearOpMode {
         motorF = hardwareMap.get(DcMotor.class, "front");
         motorB = hardwareMap.get(DcMotor.class, "back");
 
-        AnalogInput pot = hardwareMap.analogInput.get("pot1");
+        AnalogInput pot = hardwareMap.analogInput.get("potent");
         Sensors sens = new Sensors(pot);
 
         wheel.setDirection(CRServo.Direction.FORWARD);
         s1.setDirection(Servo.Direction.REVERSE);
         s2.setDirection(Servo.Direction.FORWARD);
-        int pos = 0;
+        double pos = 0;
         motorF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -94,15 +94,26 @@ public class Arm extends LinearOpMode {
 
             if (gamepad1.right_trigger>0.3) {
                 arm.armIntake(INTAKE_SPEED);
-            } else if (gamepad1.right_bumper) {
+            } else if (gamepad1.left_trigger>0.3) {
                 arm.armIntake(-INTAKE_SPEED);
             } else {
                 arm.armIntake(0);
             }
 
             if (gamepad1.a) {
-                arm.armZero();
+                pos = 0;
             }
+            if(gamepad1.x) {
+                pos += .01;
+
+            }
+
+            if (gamepad1.b) {
+                pos -= .01;
+            }
+
+
+            arm.armSet(pos);
 
             telemetry.addData("Height Power", gamepad1.left_stick_x);
             telemetry.addData("Angle", sens.getPot());
