@@ -38,13 +38,10 @@ import static android.os.SystemClock.sleep;
 public class Movement {
     private double TURN_POWER  = 0.4;
     private double DRIVE_POWER = 0.6;
-    private double BACK_TO_FRONT_RATIO = 4/31;
-    private double BACK_RATIO = 31;
-    private double FRONT_RATIO = 4;
     private DcMotor motorFL, motorFR, motorBL, motorBR;
     private BNO055IMU gyro;
-    private Servo s1, s2, s3;
-    private CRServo wheel, wr;
+    private Servo s1, s2;
+    private CRServo wheel;
     private DcMotor armBase, armBaseBack;
     private int SLEEP_MS = 100;
 
@@ -68,30 +65,10 @@ public class Movement {
      * Initialize the class with the arm functionality
      *
      */
-    Movement(Servo s1, Servo s2, Servo s3, CRServo wl) {
+    Movement(Servo s1, Servo s2, CRServo wl) {
         this.s1 = s1;
         this.s2 = s2;
-        this.s3 = s3;
         this.wheel = wl;
-        this.wr = wr;
-    }
-    Movement(Servo s1, Servo s2, Servo s3, CRServo wl, CRServo wr) {
-        this.s1 = s1;
-        this.s2 = s2;
-        this.s3 = s3;
-        this.wheel = wl;
-    }
-
-    /**
-     * Initialize the class with just the wheel functionality (testing only)
-     */
-    Movement(CRServo wheel) {
-        this.wheel = wheel;
-    }
-
-    Movement(DcMotor back, DcMotor front) {
-        this.armBase = front;
-        this.armBaseBack = back;
     }
 
     /**
@@ -159,20 +136,7 @@ public class Movement {
 
     }
 
-    /**
-     * Basic movement with a left and right side to move. Best for tank drives or POV Drives
-     * @param lpower The power to give to the left side
-     * @param rpower The power to give to the right side
-     */
-    public void move(double lpower, double rpower) {
-        motorFL.setPower(lpower);
-        motorFR.setPower(rpower);
-        motorBL.setPower(lpower);
-        motorBR.setPower(rpower);
-    }
-
     // TODO: Test this function
-
     /**
      * Moves servos based on speed
      * @param servo The servo to move
@@ -214,15 +178,13 @@ public class Movement {
     // TODO: JavaDoc
     public void armZero() {
         s1.setPosition(0);
-        s2.setPosition(0);
-        s3.setPosition(0);
+        s2.setPosition(270);
     }
 
     // TODO: JavaDoc
     public void armSet(double pos) {
         s1.setPosition(pos);
         s2.setPosition(pos);
-        s3.setPosition(pos);
     }
 
     // TODO: JavaDoc
