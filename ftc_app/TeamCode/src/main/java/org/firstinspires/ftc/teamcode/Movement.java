@@ -38,6 +38,9 @@ import static android.os.SystemClock.sleep;
 public class Movement {
     private double TURN_POWER  = 0.4;
     private double DRIVE_POWER = 0.6;
+    private double BACK_TO_FRONT_RATIO = 4/31;
+    private double BACK_RATIO = 31;
+    private double FRONT_RATIO = 4;
     private DcMotor motorFL, motorFR, motorBL, motorBR;
     private BNO055IMU gyro;
     private Servo s1, s2, s3;
@@ -84,6 +87,11 @@ public class Movement {
      */
     Movement(CRServo wheel) {
         this.wheel = wheel;
+    }
+
+    Movement(DcMotor back, DcMotor front) {
+        this.armBase = front;
+        this.armBaseBack = back;
     }
 
     /**
@@ -220,6 +228,16 @@ public class Movement {
     // TODO: JavaDoc
     public void armIntake(double speed) {
         wheel.setPower(speed);
+    }
+
+    public void armBaseBack() {
+        armBase.setPower(-0.2);
+        armBaseBack.setPower(1);
+    }
+
+    public void armBaseForward() {
+        armBase.setPower(0.55);
+        armBaseBack.setPower(-0.2);
     }
 
     //----------------------------------------------------------------------------------------------

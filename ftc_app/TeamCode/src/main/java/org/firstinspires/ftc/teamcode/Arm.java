@@ -29,10 +29,6 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import android.hardware.Sensor;
-
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
@@ -41,39 +37,19 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
- * This OpMode ramps a single motor speed up and down repeatedly until Stop is pressed.
- * The code is structured as a LinearOpMode
- *
- * This code assumes a DC motor configured with the name "left_drive" as is found on a pushbot.
- *
- * INCREMENT sets how much to increase/decrease the power each cycle
- * CYCLE_MS sets the update period.
- *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
+ * TODO: javadoc
  */
-@TeleOp(name = "Concept: Ramp Motor Speed", group = "Concept")
+@TeleOp(name = "Arm", group = "Linear Op Mode")
 
-public class ConceptRampMotorSpeed extends LinearOpMode {
-
-    static final double INCREMENT   = 0.01;     // amount to ramp motor each CYCLE_MS cycle
-    static final int    CYCLE_MS    =   50;     // period of each cycle
-    static final double MAX_FWD     =  1.0;     // Maximum FWD power applied to motor
-    static final double MAX_REV     = -1.0;     // Maximum REV power applied to motor
+public class Arm extends LinearOpMode {
 
     // Define class members
-    DcMotor motor;
+    DcMotor motorF, motorB;
     Servo s1,s2,s3;
     CRServo wl,wr;
 
-
-    double  power   = 0;
-    boolean rampUp  = true;
-
-
     @Override
     public void runOpMode() {
-
         s1 = hardwareMap.get(Servo.class, "s1");
         s2 = hardwareMap.get(Servo.class, "s2");
         s3 = hardwareMap.get(Servo.class, "s3");
@@ -81,15 +57,14 @@ public class ConceptRampMotorSpeed extends LinearOpMode {
         wr = hardwareMap.get(CRServo.class, "wr");
 
         Movement arm = new Movement(s1, s2, s3, wl, wr);
-        // Connect to motor (Assume standard left wheel)
-        // Change the text in quotes to match any motor name on your robot.
-        motor = hardwareMap.get(DcMotor.class, "elev");
+
+        motorF = hardwareMap.get(DcMotor.class, "front");
+        motorB = hardwareMap.get(DcMotor.class, "back");
+
 
         AnalogInput pot = hardwareMap.analogInput.get("potent");
         Sensors sens = new Sensors(pot);
-        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
 
         wr.setDirection(CRServo.Direction.FORWARD);
         wl.setDirection(CRServo.Direction.FORWARD);
@@ -100,76 +75,41 @@ public class ConceptRampMotorSpeed extends LinearOpMode {
 
 
         // Wait for the start button
-        telemetry.addData(">", "Press Start to run Motors." );
+        telemetry.addData("> ", "Press Start to run Motors." );
         telemetry.update();
         int pos = 0;
-        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
         waitForStart();
 
-        // Ramp motor speeds till stop pressed.
+        // TODO: Comments
         while(opModeIsActive()) {
-
-/*
             if(gamepad1.left_bumper) {
-                // Checks if its below threshold
-
-                if(sens.getPot()< 23) {
-
-                } else {
-                    pos -= 20;
-                }
-
-
-            } else if(gamepad1.right_bumper)  {
-
-                if(sens.getPot()> 120) {
-
-                }
-                else {
-                    pos += 20;
-                }
-
-
-            }
-*/
-
-
-          //  motor.setTargetPosition(pos);
-            if(gamepad1.left_bumper) {
-                motor.setPower(1);
-            }
-            if(gamepad1.right_bumper) {
-                motor.setPower(-1);
-            }
-            else {
-                motor.setPower(0);
-            }
-
-
- /*
-            if((sens.getPot() < 23 && motor.getCurrentPosition() > motor.getTargetPosition()) ||
-                    (sens.getPot()>120 && motor.getCurrentPosition() < motor.getTargetPosition())) {
-                motor.setTargetPosition(motor.getCurrentPosition());
+                arm.armBaseBack();
+            } else if(gamepad1.right_bumper) {
+                arm.armBaseForward();
             } else {
-                motor.setPower(.5);
+                motorF.setPower(0);
+                motorB.setPower(0);
             }
-            */
-
 
             telemetry.addData("Height Power", gamepad1.left_stick_x);
             telemetry.addData("Angle", sens.getPot());
             telemetry.addData("Expected Position", pos);
-            telemetry.addData("Postition",motor.getCurrentPosition());
+            telemetry.addData("Actual Position Front", motorF.getCurrentPosition());
+            telemetry.addData("Actual position back", motorB.getCurrentPosition());
+
             telemetry.update();
         }
 
         // Turn off motor and signal done;
-        motor.setPower(0);
         telemetry.addData(">", "Done");
         telemetry.update();
 
