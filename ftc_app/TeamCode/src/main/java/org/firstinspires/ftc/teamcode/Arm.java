@@ -44,39 +44,29 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Arm extends LinearOpMode {
 
     // Define class members
-    DcMotor motorF, motorB;
-    Servo s1,s2,s3;
-    CRServo wl,wr;
+    private DcMotor motorF, motorB;
+    private Servo s1,s2;
+    private CRServo wheel;
+    private double INTAKE_SPEED=0.5;
 
     @Override
     public void runOpMode() {
         s1 = hardwareMap.get(Servo.class, "s1");
         s2 = hardwareMap.get(Servo.class, "s2");
-        s3 = hardwareMap.get(Servo.class, "s3");
-        wl = hardwareMap.get(CRServo.class, "wl");
-        wr = hardwareMap.get(CRServo.class, "wr");
 
-        Movement arm = new Movement(s1, s2, s3, wl, wr);
+        wheel = hardwareMap.get(CRServo.class, "wheel");
+
+        Movement arm = new Movement(s1, s2, wheel);
 
         motorF = hardwareMap.get(DcMotor.class, "front");
         motorB = hardwareMap.get(DcMotor.class, "back");
 
-
-        AnalogInput pot = hardwareMap.analogInput.get("potent");
+        AnalogInput pot = hardwareMap.analogInput.get("pot1");
         Sensors sens = new Sensors(pot);
 
-
-        wr.setDirection(CRServo.Direction.FORWARD);
-        wl.setDirection(CRServo.Direction.FORWARD);
+        wheel.setDirection(CRServo.Direction.FORWARD);
         s1.setDirection(Servo.Direction.REVERSE);
         s2.setDirection(Servo.Direction.FORWARD);
-        s3.setDirection(Servo.Direction.FORWARD);
-
-
-
-        // Wait for the start button
-        telemetry.addData("> ", "Press Start to run Motors." );
-        telemetry.update();
         int pos = 0;
         motorF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -86,7 +76,9 @@ public class Arm extends LinearOpMode {
         motorF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-
+        // Wait for the start button
+        telemetry.addData("> ", "Press Start to run Motors.");
+        telemetry.update();
         waitForStart();
 
         // TODO: Comments
@@ -98,6 +90,18 @@ public class Arm extends LinearOpMode {
             } else {
                 motorF.setPower(0);
                 motorB.setPower(0);
+            }
+
+            if (gamepad1.right_trigger>0.3) {
+                arm.armIntake(INTAKE_SPEED);
+            } else if (gamepad1.right_bumper) {
+                arm.armIntake(-INTAKE_SPEED);
+            } else {
+                arm.armIntake(0);
+            }
+
+            if (gamepad1.a) {
+                arm.armZero();
             }
 
             telemetry.addData("Height Power", gamepad1.left_stick_x);
