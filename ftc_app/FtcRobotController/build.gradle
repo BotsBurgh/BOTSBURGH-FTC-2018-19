@@ -7,10 +7,10 @@ android {
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 19
     }
 
-    compileSdkVersion 26
+    compileSdkVersion 23
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
@@ -22,8 +22,6 @@ repositories {
     flatDir {
         dirs '../libs'
     }
-    google()
-    jcenter()
 }
 
 apply from: 'build.release.gradle'

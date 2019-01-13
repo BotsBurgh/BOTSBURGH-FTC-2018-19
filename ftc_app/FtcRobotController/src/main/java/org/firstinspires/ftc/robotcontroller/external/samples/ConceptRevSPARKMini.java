@@ -1,4 +1,4 @@
-/* Copyright (c) 2017 FIRST. All rights reserved.
+/* Copyright (c) 2018 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted (subject to the limitations in the disclaimer below) provided that
@@ -29,86 +29,49 @@
 
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 
 /**
- * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
- * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
- * of the FTC Driver Station. When an selection is made from the menu, the corresponding OpMode
- * class is instantiated on the Robot Controller and executed.
  *
- * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
- * It includes all the skeletal structure that all linear OpModes contain.
+ * This OpMode executes a basic Tank Drive Teleop for a two wheeled robot using two REV SPARK Minis.
+ * To use this example, connect two REV SPARK Minis into servo ports on the Expansion Hub. On the
+ * robot configuration, use the drop down list under 'Servos' to select 'REV SPARK Mini Controller'
+ * and name them 'left_drive' and 'right_drive'.
  *
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Linear OpMode", group="Linear Opmode")
+@TeleOp(name="REV SPARK Mini Simple Drive Example", group="Concept")
 @Disabled
-public class BasicOpMode_Linear extends LinearOpMode {
+public class ConceptRevSPARKMini extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftDrive = null;
-    private DcMotor rightDrive = null;
-
-
-
-
+    private DcMotorSimple leftDrive = null;
+    private DcMotorSimple rightDrive = null;
 
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-
-        // P Path
-        // Center
-        // go forward about  2 foot
-        // go backward 1 foot
-        // Turn io degrees left
-        // if left, then turn 45 left
-        // if right, then turn 45 right
-        // move foreward
-        // move backward
-        // if left then turn 135 right
-        // if right then turn 45 right
-        // Move three feet forward
-        // Turn 45 degrees left
-        // Drive 5 feet forward
-
-        // Move 7 feet. backwards
-
-        //  D path
-        // Go forward 2 feet
-        // if left, then turn 45 left
-        // if right, then turn 45 right
-        // move foreward
-        // move backward
-        // if left then turn 135 right
-        // if right then turn 45 right
-        // Turn 90 degrees to left
-        // Turn 45 degrees to right
-        // go forward 5 feet
-        // go bakcward 7 feet.
-
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
-        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        leftDrive  = hardwareMap.get(DcMotorSimple.class, "left_drive");
+        rightDrive = hardwareMap.get(DcMotorSimple.class, "right_drive");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        leftDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightDrive.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();

@@ -23,6 +23,17 @@ public class MecanumDrive extends LinearOpMode {
         gyro = hardwareMap.get(BNO055IMU.class, "gyro");
         motorFL.setDirection(DcMotor.Direction.REVERSE);
         motorBL.setDirection(DcMotor.Direction.REVERSE);
+
+        motorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorBL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorFL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorFR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         Movement movement = new Movement(motorFL, motorFR, motorBL, motorBR, gyro);
 
         telemetry.addData("Status", "Initialized");
@@ -41,6 +52,10 @@ public class MecanumDrive extends LinearOpMode {
             double brPower = y1 - x1+rotation;
 
             movement.quadMove(flPower, frPower, blPower, brPower);
+            telemetry.addData("Back Left", motorBL.getCurrentPosition());
+            telemetry.addData("Back Right",motorBL.getCurrentPosition());
+            telemetry.addData("Front Left",motorFL.getCurrentPosition());
+            telemetry.addData("FRont right", motorFR.getCurrentPosition());
         }
 
     }

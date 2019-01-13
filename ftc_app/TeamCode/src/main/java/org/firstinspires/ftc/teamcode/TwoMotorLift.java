@@ -29,10 +29,6 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import android.hardware.Sensor;
-
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
@@ -52,9 +48,9 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-@TeleOp(name = "Concept: Ramp Motor Speed", group = "Concept")
+@TeleOp(name = "TWO MOTOR LIFT", group = "Concept")
 
-public class ConceptRampMotorSpeed extends LinearOpMode {
+public class TwoMotorLift extends LinearOpMode {
 
     static final double INCREMENT   = 0.01;     // amount to ramp motor each CYCLE_MS cycle
     static final int    CYCLE_MS    =   50;     // period of each cycle
@@ -62,7 +58,7 @@ public class ConceptRampMotorSpeed extends LinearOpMode {
     static final double MAX_REV     = -1.0;     // Maximum REV power applied to motor
 
     // Define class members
-    DcMotor motor;
+    DcMotor motorF, motorB;
     Servo s1,s2,s3;
     CRServo wl,wr;
 
@@ -83,13 +79,13 @@ public class ConceptRampMotorSpeed extends LinearOpMode {
         Movement arm = new Movement(s1, s2, s3, wl, wr);
         // Connect to motor (Assume standard left wheel)
         // Change the text in quotes to match any motor name on your robot.
-        motor = hardwareMap.get(DcMotor.class, "elev");
+        motorF = hardwareMap.get(DcMotor.class, "elev_f");
+        motorB = hardwareMap.get(DcMotor.class, "elev_r");
+
 
         AnalogInput pot = hardwareMap.analogInput.get("potent");
         Sensors sens = new Sensors(pot);
-        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
 
         wr.setDirection(CRServo.Direction.FORWARD);
         wl.setDirection(CRServo.Direction.FORWARD);
@@ -103,10 +99,13 @@ public class ConceptRampMotorSpeed extends LinearOpMode {
         telemetry.addData(">", "Press Start to run Motors." );
         telemetry.update();
         int pos = 0;
-        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
         waitForStart();
@@ -141,14 +140,28 @@ public class ConceptRampMotorSpeed extends LinearOpMode {
 
           //  motor.setTargetPosition(pos);
             if(gamepad1.left_bumper) {
-                motor.setPower(1);
+                motorF.setPower(.7);
+                //motorB.setPower(-1);
             }
-            if(gamepad1.right_bumper) {
-                motor.setPower(-1);
+            else if(gamepad1.right_bumper) {
+                motorF.setPower(-.7);
+                //motorB.setPower(1);
             }
             else {
-                motor.setPower(0);
+                motorF.setPower(0);
+               // motorB.setPower(0);
             }
+
+            if(gamepad1.dpad_up) {
+                motorB.setPower(-1);
+            }
+            else if(gamepad1.dpad_down) {
+                motorB.setPower(1);
+            }
+            else {
+                motorB.setPower(0);
+            }
+
 
 
  /*
@@ -164,12 +177,14 @@ public class ConceptRampMotorSpeed extends LinearOpMode {
             telemetry.addData("Height Power", gamepad1.left_stick_x);
             telemetry.addData("Angle", sens.getPot());
             telemetry.addData("Expected Position", pos);
-            telemetry.addData("Postition",motor.getCurrentPosition());
+            telemetry.addData("Actual Position Front", motorF.getCurrentPosition());
+            telemetry.addData("Actual position back", motorB.getCurrentPosition());
+
             telemetry.update();
         }
 
         // Turn off motor and signal done;
-        motor.setPower(0);
+
         telemetry.addData(">", "Done");
         telemetry.update();
 

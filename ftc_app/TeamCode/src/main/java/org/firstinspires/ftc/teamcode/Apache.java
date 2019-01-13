@@ -20,6 +20,16 @@ public class Apache extends LinearOpMode {
     double pos=0;
     boolean scanD=true;
 
+    // Camera detection.
+
+    // DROP DOWN
+    // use the second motor to pull itself down
+    // turn it until you reach 130 deg
+
+    // Then UNHOOK
+    // Move both motors to coil itself back up
+    // Not sure that it will coil itself back up.
+
     @Override
     public void runOpMode() {
         // Init Servos
@@ -28,7 +38,7 @@ public class Apache extends LinearOpMode {
         s3 = hardwareMap.get(Servo.class, "s3");
         wl = hardwareMap.get(CRServo.class, "wl");
         wr = hardwareMap.get(CRServo.class, "wr");
-        elev = hardwareMap.get(DcMotor.class,"elev");
+        elev = hardwareMap.get(DcMotor.class,"elev_f");
 
         wr.setDirection(CRServo.Direction.FORWARD);
         wl.setDirection(CRServo.Direction.FORWARD);
@@ -52,9 +62,9 @@ public class Apache extends LinearOpMode {
         while(opModeIsActive()) {
 
             if(gamepad1.x) {
-                power = .1;
+                power = 1;
             } else if(gamepad1.b) {
-                power = -.1;
+                power = -1;
             }
             else {
                 power = 0.0;

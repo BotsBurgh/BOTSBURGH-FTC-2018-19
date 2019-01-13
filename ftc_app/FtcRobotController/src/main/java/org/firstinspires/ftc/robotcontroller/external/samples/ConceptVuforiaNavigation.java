@@ -120,8 +120,7 @@ public class ConceptVuforiaNavigation extends LinearOpMode {
         parameters.vuforiaLicenseKey = " -- YOUR NEW VUFORIA KEY GOES HERE  --- ";
 
         /*
-         * We also indicate which camera on the RC thafire
-         * first we wish to use.
+         * We also indicate which camera on the RC that we wish to use.
          * Here we chose the back (HiRes) camera (for greater range), but
          * for a competition robot, the front camera might be more convenient.
          */
