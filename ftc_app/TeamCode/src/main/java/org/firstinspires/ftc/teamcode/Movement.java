@@ -41,8 +41,8 @@ public class Movement {
     private DcMotor motorFL, motorFR, motorBL, motorBR;
     private BNO055IMU gyro;
     private Servo s1, s2, s3;
-    private CRServo wl, wr;
-    private DcMotor armBase;
+    private CRServo wheel, wr;
+    private DcMotor armBase, armBaseBack;
     private int SLEEP_MS = 100;
 
     /**
@@ -62,17 +62,29 @@ public class Movement {
     }
 
     /**
-     * Initialize the class with the elevator functionality
+     * Initialize the class with the arm functionality
      *
      */
+    Movement(Servo s1, Servo s2, Servo s3, CRServo wl) {
+        this.s1 = s1;
+        this.s2 = s2;
+        this.s3 = s3;
+        this.wheel = wl;
+        this.wr = wr;
+    }
     Movement(Servo s1, Servo s2, Servo s3, CRServo wl, CRServo wr) {
         this.s1 = s1;
         this.s2 = s2;
         this.s3 = s3;
-        this.wl = wl;
-        this.wr = wr;
+        this.wheel = wl;
     }
 
+    /**
+     * Initialize the class with just the wheel functionality (testing only)
+     */
+    Movement(CRServo wheel) {
+        this.wheel = wheel;
+    }
 
     /**
      * Moves based on the encoder
@@ -207,8 +219,7 @@ public class Movement {
 
     // TODO: JavaDoc
     public void armIntake(double speed) {
-        wl.setPower(speed);
-        wr.setPower(speed);
+        wheel.setPower(speed);
     }
 
     //----------------------------------------------------------------------------------------------
