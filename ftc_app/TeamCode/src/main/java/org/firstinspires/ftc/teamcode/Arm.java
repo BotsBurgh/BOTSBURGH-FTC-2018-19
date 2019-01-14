@@ -45,7 +45,7 @@ public class Arm extends LinearOpMode {
 
     // Define class members
     private DcMotor motorF, motorB;
-    private Servo s1,s2;
+    private Servo s1,s2, hook;
     private CRServo wheel;
     private double INTAKE_SPEED=0.5;
 
@@ -53,6 +53,7 @@ public class Arm extends LinearOpMode {
     public void runOpMode() {
         s1 = hardwareMap.get(Servo.class, "s1");
         s2 = hardwareMap.get(Servo.class, "s2");
+        hook = hardwareMap.get(Servo.class,"hook");
 
         wheel = hardwareMap.get(CRServo.class, "wheel");
 
@@ -68,6 +69,7 @@ public class Arm extends LinearOpMode {
         s1.setDirection(Servo.Direction.REVERSE);
         s2.setDirection(Servo.Direction.FORWARD);
         double pos = 0;
+        double hook_pos = 0;
         motorF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -102,6 +104,7 @@ public class Arm extends LinearOpMode {
 
             if (gamepad1.a) {
                 pos = 0;
+                hook.setPosition(0);
             }
             if(gamepad1.x) {
                 pos += .01;
@@ -111,6 +114,14 @@ public class Arm extends LinearOpMode {
             if (gamepad1.b) {
                 pos -= .01;
             }
+
+            if(gamepad1.dpad_up) {
+                hook_pos += .01;
+            }
+            if(gamepad1.dpad_down) {
+                hook_pos -= .01;
+            }
+            hook.setPosition(hook_pos);
 
 
             arm.armSet(pos);
