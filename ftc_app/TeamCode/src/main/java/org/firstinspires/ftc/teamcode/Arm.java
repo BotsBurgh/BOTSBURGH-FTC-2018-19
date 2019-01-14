@@ -116,10 +116,10 @@ public class Arm extends LinearOpMode {
             }
 
             if(gamepad1.dpad_up) {
-                hook_pos += .01;
+                hook_pos += .05;
             }
             if(gamepad1.dpad_down) {
-                hook_pos -= .01;
+                hook_pos -= .05;
             }
             hook.setPosition(hook_pos);
 
