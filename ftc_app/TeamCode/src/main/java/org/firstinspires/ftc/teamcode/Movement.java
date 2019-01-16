@@ -61,6 +61,11 @@ public class Movement {
         this.gyro      = gyro;
     }
 
+    Movement(DcMotor armBase,DcMotor armBaseBack) {
+        this.armBase = armBase;
+        this.armBaseBack = armBaseBack;
+    }
+
     /**
      * Initialize the class with the arm functionality
      *
@@ -184,7 +189,7 @@ public class Movement {
     // TODO: JavaDoc
     public void armSet(double pos) {
         s1.setPosition(pos);
-        s2.setPosition(270-pos);
+        s2.setPosition(pos);
     }
 
     // TODO: JavaDoc
@@ -193,13 +198,13 @@ public class Movement {
     }
 
     public void armBaseBack() {
-        armBase.setPower(-0.2);
-        armBaseBack.setPower(1);
+        armBase.setPower(-0.1);
+        armBaseBack.setPower(.5);
     }
 
     public void armBaseForward() {
-        armBase.setPower(0.55);
-        armBaseBack.setPower(-0.2);
+        armBase.setPower(.55);
+        armBaseBack.setPower(-0.15);
     }
 
     //----------------------------------------------------------------------------------------------
