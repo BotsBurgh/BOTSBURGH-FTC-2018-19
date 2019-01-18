@@ -59,7 +59,7 @@ RF is Red Far    (Far from the red team's crater)
 
 
 // Tests
-
+// TODO: JavaDoc
 @Autonomous(name="encoderTest")
 public class Auto extends LinearOpMode {
     /* Declare OpMode members. */

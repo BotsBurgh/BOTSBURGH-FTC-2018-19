@@ -89,35 +89,35 @@ public class FullControl extends LinearOpMode{
             if(gamepad1.start) {
                 while(Math.abs(sens.getPot()-90)<5) {
                     if(sens.getPot()>90) {
-                        base.armBaseBack(.3);
+                        base.armBase(-.3);
                     }
                     if(sens.getPot()<90) {
-                        base.armBaseForward(.4);
+                        base.armBase(.4);
                     }
                 }
             }
 
             if(gamepad1.left_bumper) {
                 if(sens.getPot()<20) {
-                    base.armBaseBack(0);
+                    base.armBase(0);
                 } else if(sens.getPot()<50) {
-                    base.armBaseBack(.1);
+                    base.armBase(-.1);
                 } else if(sens.getPot()<90) {
-                    base.armBaseBack(.3);
+                    base.armBase(-.3);
                 } else {
-                    base.armBaseBack(.5);
+                    base.armBase(-.5);
                 }
 
             } else if(gamepad1.right_bumper) {
                 if(sens.getPot()>115) {
-                    base.armBaseForward(0);
+                    base.armBase(0);
                 } else if(sens.getPot() > 90) {
-                    base.armBaseForward(.1);
+                    base.armBase(.1);
                 } else if(sens.getPot() > 40) {
-                    base.armBaseForward(.4);
+                    base.armBase(.4);
                     pos = .15;
                 } else {
-                    base.armBaseForward(.5);
+                    base.armBase(.5);
                 }
             } else {
                 motorF.setPower(0);
