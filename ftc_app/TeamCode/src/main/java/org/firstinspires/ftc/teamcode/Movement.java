@@ -197,14 +197,14 @@ public class Movement {
         wheel.setPower(speed);
     }
 
-    public void armBaseBack() {
+    public void armBaseBack(double speed) {
         armBase.setPower(-0.1);
-        armBaseBack.setPower(.5);
+        armBaseBack.setPower(speed);
     }
 
-    public void armBaseForward() {
-        armBase.setPower(.55);
-        armBaseBack.setPower(-0.15);
+    public void armBaseForward(double speed) {
+        armBase.setPower(speed);
+        armBaseBack.setPower(-0.1);
     }
 
     //----------------------------------------------------------------------------------------------

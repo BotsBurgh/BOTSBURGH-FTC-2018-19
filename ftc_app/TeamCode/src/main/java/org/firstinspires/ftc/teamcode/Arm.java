@@ -87,10 +87,11 @@ public class Arm extends LinearOpMode {
 
         // TODO: Comments
         while(opModeIsActive()) {
+
             if(gamepad1.left_bumper) {
-                base.armBaseBack();
+                base.armBaseBack(.55);
             } else if(gamepad1.right_bumper) {
-                base.armBaseForward();
+                base.armBaseForward(.55);
             } else {
                 motorF.setPower(0);
                 motorB.setPower(0);

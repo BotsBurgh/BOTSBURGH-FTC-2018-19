@@ -52,7 +52,7 @@ public class FullControl extends LinearOpMode{
         s1.setDirection(Servo.Direction.REVERSE);
         s2.setDirection(Servo.Direction.FORWARD);
 
-        double pos = 0;
+        double pos = .8;
         double hook_pos = 0;
         motorF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -86,14 +86,38 @@ public class FullControl extends LinearOpMode{
             telemetry.addData("Back Right",motorBL.getCurrentPosition());
             telemetry.addData("Front Left",motorFL.getCurrentPosition());
             telemetry.addData("Front right", motorFR.getCurrentPosition());
+            if(gamepad1.start) {
+                while(Math.abs(sens.getPot()-90)<5) {
+                    if(sens.getPot()>90) {
+                        base.armBaseBack(.3);
+                    }
+                    if(sens.getPot()<90) {
+                        base.armBaseForward(.4);
+                    }
+                }
+            }
 
             if(gamepad1.left_bumper) {
-                if(sens.getPot()>20) {
-                    base.armBaseBack();
+                if(sens.getPot()<20) {
+                    base.armBaseBack(0);
+                } else if(sens.getPot()<50) {
+                    base.armBaseBack(.1);
+                } else if(sens.getPot()<90) {
+                    base.armBaseBack(.3);
+                } else {
+                    base.armBaseBack(.5);
                 }
+
             } else if(gamepad1.right_bumper) {
-                if(sens.getPot()<115) {
-                    base.armBaseForward();
+                if(sens.getPot()>115) {
+                    base.armBaseForward(0);
+                } else if(sens.getPot() > 90) {
+                    base.armBaseForward(.1);
+                } else if(sens.getPot() > 40) {
+                    base.armBaseForward(.4);
+                    pos = .15;
+                } else {
+                    base.armBaseForward(.5);
                 }
             } else {
                 motorF.setPower(0);
@@ -113,12 +137,24 @@ public class FullControl extends LinearOpMode{
                 hook.setPosition(0);
             }
             if(gamepad1.x) {
-                pos += .1;
-
+                pos = .1;
+                /*
+                if(pos<1) {
+                    pos += .1;
+                }
+                */
             }
 
             if (gamepad1.b) {
-                pos -= .1;
+                pos = .8;
+                /*
+                if(pos > 0) {
+                    pos -= .1;
+                }
+                */
+            }
+            if(gamepad1.y) {
+                pos = .15;
             }
 
             if(gamepad1.dpad_up) {
