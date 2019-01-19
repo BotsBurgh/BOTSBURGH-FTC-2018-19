@@ -89,6 +89,7 @@ public class FullControl extends LinearOpMode{
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         waitForStart();
+        motorB.setTargetPosition(motorB.getCurrentPosition());
 
         while(opModeIsActive()) {
             double x1 = gamepad1.left_stick_x;
@@ -119,11 +120,9 @@ public class FullControl extends LinearOpMode{
                 } else {
                     base.armBase(-.5);
                 }
-<<<<<<< HEAD
+                motorB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorB.setTargetPosition(motorB.getCurrentPosition());
 
-
-=======
->>>>>>> parent of 1ca3cb2... Fixed bug from last commit
 
             } else if(gamepad1.right_bumper) {
 
@@ -137,23 +136,13 @@ public class FullControl extends LinearOpMode{
                 } else {
                     base.armBase(.5);
                 }
-<<<<<<< HEAD
-
-
-            } else {
-=======
-            } else {
-                motorF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                motorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-                motorF.setTargetPosition(motorF.getCurrentPosition());
+                motorB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 motorB.setTargetPosition(motorB.getCurrentPosition());
->>>>>>> parent of 1ca3cb2... Fixed bug from last commit
 
-
-
+            } else {
+                motorB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 motorF.setPower(0);
-                motorB.setPower(0);
+                motorB.setPower(.1);
             }
 
             if (gamepad1.right_trigger>0.3) {
