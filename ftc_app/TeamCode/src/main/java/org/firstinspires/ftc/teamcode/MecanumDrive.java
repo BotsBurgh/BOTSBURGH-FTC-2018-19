@@ -58,7 +58,7 @@ public class MecanumDrive extends LinearOpMode {
 
         waitForStart();
         while(opModeIsActive()) {
-            // Add deadzones later 
+
             double x1 = gamepad1.left_stick_x;
             double y1 = gamepad1.left_stick_y;
             double rotation = gamepad1.right_stick_x;

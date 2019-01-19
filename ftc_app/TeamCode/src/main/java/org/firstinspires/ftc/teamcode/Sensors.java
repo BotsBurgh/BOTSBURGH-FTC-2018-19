@@ -46,6 +46,7 @@ public class Sensors {
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
     private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
 
+
     // TODO: Initialize more sensors
     BNO055IMU gyro; // Initializes gyroscope
     AnalogInput pot; // Initializes potentiometer
