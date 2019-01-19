@@ -1,3 +1,19 @@
+/*
+Copyright 2019 FIRST Tech Challenge Team 11792
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute,
+sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
 package org.firstinspires.ftc.teamcode;
 
 // Integrates the Arm and MecanumDrive Classes
@@ -89,35 +105,35 @@ public class FullControl extends LinearOpMode{
             if(gamepad1.start) {
                 while(Math.abs(sens.getPot()-90)<5) {
                     if(sens.getPot()>90) {
-                        base.armBaseBack(.3);
+                        base.armBase(-.3);
                     }
                     if(sens.getPot()<90) {
-                        base.armBaseForward(.4);
+                        base.armBase(.4);
                     }
                 }
             }
 
             if(gamepad1.left_bumper) {
                 if(sens.getPot()<20) {
-                    base.armBaseBack(0);
+                    base.armBase(0);
                 } else if(sens.getPot()<50) {
-                    base.armBaseBack(.1);
+                    base.armBase(-.1);
                 } else if(sens.getPot()<90) {
-                    base.armBaseBack(.3);
+                    base.armBase(-.3);
                 } else {
-                    base.armBaseBack(.5);
+                    base.armBase(-.5);
                 }
 
             } else if(gamepad1.right_bumper) {
                 if(sens.getPot()>115) {
-                    base.armBaseForward(0);
+                    base.armBase(0);
                 } else if(sens.getPot() > 90) {
-                    base.armBaseForward(.1);
+                    base.armBase(.1);
                 } else if(sens.getPot() > 40) {
-                    base.armBaseForward(.4);
+                    base.armBase(.4);
                     pos = .15;
                 } else {
-                    base.armBaseForward(.5);
+                    base.armBase(.5);
                 }
             } else {
                 motorF.setPower(0);

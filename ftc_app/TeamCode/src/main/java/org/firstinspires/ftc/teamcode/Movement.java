@@ -35,18 +35,26 @@ import java.util.Locale;
 
 import static android.os.SystemClock.sleep;
 
+/**
+ * The Movement class
+ *
+ * In this class, you can move the robot easily.
+ * So far: Move the arm and drive the robot
+ * Created by Nitesh and Sambhav
+ */
 public class Movement {
-    private double TURN_POWER  = 0.4;
-    private double DRIVE_POWER = 0.6;
+    private double TURN_POWER  = 0.4; // How fast to turn
+    private double DRIVE_POWER = 0.6; // How fast to drive
+    private int SLEEP_MS = 100; // For scanning the servo
+    private int ARM_SERVO = 270; // The range of the servos in the arm
     private DcMotor motorFL, motorFR, motorBL, motorBR;
     private BNO055IMU gyro;
     private Servo s1, s2;
     private CRServo wheel;
     private DcMotor armBase, armBaseBack;
-    private int SLEEP_MS = 100;
 
     /**
-     * Initialize the class
+     * Initialize the class with driving functionality
      * @param motorFL The front left motor
      * @param motorFR The front right motor
      * @param motorBL The back left motor
@@ -61,14 +69,21 @@ public class Movement {
         this.gyro      = gyro;
     }
 
+    /**
+     * Initialize the class with just the lower arm functionality
+     * @param armBase The motor connected to the arm at the axle
+     * @param armBaseBack The motor connected to the arm at the center
+     */
     Movement(DcMotor armBase,DcMotor armBaseBack) {
         this.armBase = armBase;
         this.armBaseBack = armBaseBack;
     }
 
     /**
-     * Initialize the class with the arm functionality
-     *
+     * Initialize the class with just the upper arm functionality
+     * @param s1 The servo on the right
+     * @param s2 The servo on the left
+     * @param wl The CRservo on the intake
      */
     Movement(Servo s1, Servo s2, CRServo wl) {
         this.s1 = s1;
@@ -115,7 +130,7 @@ public class Movement {
      * Turns the robot with the gyroscope
      * @param angles Turns the robot with an Orientation object
      */
-    public void turn(Orientation angles) {
+    public void gyroTurn(Orientation angles) {
         gyro.startAccelerationIntegration(new Position(), new Velocity(), 1000);
         Orientation current = gyro.getAngularOrientation();
         if (current.firstAngle > angles.firstAngle) {
@@ -141,7 +156,6 @@ public class Movement {
 
     }
 
-    // TODO: Test this function
     /**
      * Moves servos based on speed
      * @param servo The servo to move
@@ -180,31 +194,46 @@ public class Movement {
         motorBR.setPower(brPower);
     }
 
-    // TODO: JavaDoc
+    /**
+     * Zeros the servos on the arm. Here because we have digital servos that need to be zeroed.
+     */
     public void armZero() {
         s1.setPosition(0);
-        s2.setPosition(270);
+        s2.setPosition(ARM_SERVO); // 270 because it is opposite
     }
 
-    // TODO: JavaDoc
+    /**
+     * Sets the arm angle
+     * @param pos Position from 0-270 degrees
+     */
     public void armSet(double pos) {
         s1.setPosition(pos);
-        s2.setPosition(pos);
+        s2.setPosition(ARM_SERVO-pos);
     }
 
-    // TODO: JavaDoc
+    /**
+     * The speed of the arm intake. Use continuous rotation servos.
+     * @param speed The speed of the arm intake
+     */
     public void armIntake(double speed) {
         wheel.setPower(speed);
     }
 
-    public void armBaseBack(double speed) {
-        armBase.setPower(-0.1);
-        armBaseBack.setPower(speed);
-    }
-
-    public void armBaseForward(double speed) {
-        armBase.setPower(speed);
-        armBaseBack.setPower(-0.1);
+    /**
+     * Moves the base of the arm with two motors.
+     * @param speed Speed of the arm extending. If negative, the arm will retract.
+     */
+    public void armBase(double speed) {
+        if (speed > 0) {
+            armBase.setPower(speed);
+            armBaseBack.setPower(-0.1);
+        } else if (speed < 0) {
+            armBase.setPower(-0.1);
+            armBaseBack.setPower(-speed);
+        } else {
+            armBase.setPower(0);
+            armBaseBack.setPower(0);
+        }
     }
 
     //----------------------------------------------------------------------------------------------
