@@ -119,8 +119,11 @@ public class FullControl extends LinearOpMode{
                 } else {
                     base.armBase(-.5);
                 }
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> parent of 1ca3cb2... Fixed bug from last commit
 
             } else if(gamepad1.right_bumper) {
 
@@ -134,9 +137,18 @@ public class FullControl extends LinearOpMode{
                 } else {
                     base.armBase(.5);
                 }
+<<<<<<< HEAD
 
 
             } else {
+=======
+            } else {
+                motorF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                motorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                motorF.setTargetPosition(motorF.getCurrentPosition());
+                motorB.setTargetPosition(motorB.getCurrentPosition());
+>>>>>>> parent of 1ca3cb2... Fixed bug from last commit
 
 
 
