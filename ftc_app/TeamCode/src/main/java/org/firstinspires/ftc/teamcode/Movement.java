@@ -35,6 +35,13 @@ import java.util.Locale;
 
 import static android.os.SystemClock.sleep;
 
+/**
+ * The Movement class
+ *
+ * In this class, you can move the robot easily.
+ * So far: Move the arm and drive the robot
+ * Created by Nitesh and Sambhav
+ */
 public class Movement {
     private double TURN_POWER  = 0.4; // How fast to turn
     private double DRIVE_POWER = 0.6; // How fast to drive
@@ -47,7 +54,7 @@ public class Movement {
     private DcMotor armBase, armBaseBack;
 
     /**
-     * Initialize the class
+     * Initialize the class with driving functionality
      * @param motorFL The front left motor
      * @param motorFR The front right motor
      * @param motorBL The back left motor
@@ -62,14 +69,21 @@ public class Movement {
         this.gyro      = gyro;
     }
 
+    /**
+     * Initialize the class with just the lower arm functionality
+     * @param armBase The motor connected to the arm at the axle
+     * @param armBaseBack The motor connected to the arm at the center
+     */
     Movement(DcMotor armBase,DcMotor armBaseBack) {
         this.armBase = armBase;
         this.armBaseBack = armBaseBack;
     }
 
     /**
-     * Initialize the class with the arm functionality
-     *
+     * Initialize the class with just the upper arm functionality
+     * @param s1 The servo on the right
+     * @param s2 The servo on the left
+     * @param wl The CRservo on the intake
      */
     Movement(Servo s1, Servo s2, CRServo wl) {
         this.s1 = s1;
