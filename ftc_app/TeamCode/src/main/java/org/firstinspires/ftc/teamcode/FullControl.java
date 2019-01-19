@@ -164,15 +164,17 @@ public class FullControl extends LinearOpMode{
                 hook_pos = .33;
             }
             if(gamepad1.dpad_down) {
-                hook_pos = .66;
+                hook_pos -= .1;
             }
             if(gamepad1.dpad_left) {
-                hook_pos  -= .1;
+                hook_pos = .66;
             }
 
             hook.setPosition(hook_pos);
 
-
+            if(sens.getPot()>80) {
+                pos = .1;
+            }
             arm.armSet(pos);
 
             telemetry.addData("Height Power", gamepad1.left_stick_x);
