@@ -125,6 +125,10 @@ public class FullControl extends LinearOpMode{
                 } else {
                     base.armBase(-.5);
                 }
+                motorF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                motorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                motorF.setTargetPosition(motorF.getCurrentPosition());
+                motorB.setTargetPosition(motorB.getCurrentPosition());
 
             } else if(gamepad1.right_bumper) {
                 motorF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -139,12 +143,11 @@ public class FullControl extends LinearOpMode{
                 } else {
                     base.armBase(.5);
                 }
-            } else {
                 motorF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 motorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
                 motorF.setTargetPosition(motorF.getCurrentPosition());
                 motorB.setTargetPosition(motorB.getCurrentPosition());
+            } else {
 
                 motorF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 motorF.setPower(.2);
