@@ -76,7 +76,7 @@ public class Arm extends LinearOpMode {
         while(opModeIsActive()) {
 
             if(gamepad1.left_bumper) {
-                base.armBase(-.55);
+                base.armBase(-1);
             } else if(gamepad1.right_bumper) {
                 base.armBase(.55);
             } else {

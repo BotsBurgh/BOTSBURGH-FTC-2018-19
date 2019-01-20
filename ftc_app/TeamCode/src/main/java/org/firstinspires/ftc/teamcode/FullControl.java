@@ -89,6 +89,7 @@ public class FullControl extends LinearOpMode{
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         waitForStart();
+        motorF.setTargetPosition(motorF.getCurrentPosition());
         motorB.setTargetPosition(motorB.getCurrentPosition());
 
         while(opModeIsActive()) {
@@ -118,14 +119,15 @@ public class FullControl extends LinearOpMode{
                 } else if(sens.getPot()<90) {
                     base.armBase(-.3);
                 } else {
-                    base.armBase(-.5);
+                    base.armBase(-1);
                 }
-                motorB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorF.setTargetPosition(motorF.getCurrentPosition());
                 motorB.setTargetPosition(motorB.getCurrentPosition());
 
 
             } else if(gamepad1.right_bumper) {
-
+                motorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                motorF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 if(sens.getPot()>115) {
                     base.armBase(0);
                 } else if(sens.getPot() > 90) {
@@ -136,13 +138,14 @@ public class FullControl extends LinearOpMode{
                 } else {
                     base.armBase(.5);
                 }
-                motorB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorF.setTargetPosition(motorF.getCurrentPosition());
                 motorB.setTargetPosition(motorB.getCurrentPosition());
 
             } else {
                 motorB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                motorF.setPower(0);
-                motorB.setPower(.1);
+                motorF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorF.setPower(.2);
+                motorB.setPower(.2);
             }
 
             if (gamepad1.right_trigger>0.3) {
