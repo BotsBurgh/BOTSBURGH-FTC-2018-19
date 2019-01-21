@@ -46,7 +46,7 @@ public class Movement {
     private double TURN_POWER  = 0.4; // How fast to turn
     private double DRIVE_POWER = 0.6; // How fast to drive
     private int SLEEP_MS = 100; // For scanning the servo
-    private int ARM_SERVO = 270; // The range of the servos in the arm
+    private double ARM_SERVO = 1; // The range of the servos in the arm
     private DcMotor motorFL, motorFR, motorBL, motorBR;
     private BNO055IMU gyro;
     private Servo s1, s2;
@@ -208,7 +208,7 @@ public class Movement {
      */
     public void armSet(double pos) {
         s1.setPosition(pos);
-        s2.setPosition(ARM_SERVO-pos);
+        s2.setPosition(pos);
     }
 
     /**

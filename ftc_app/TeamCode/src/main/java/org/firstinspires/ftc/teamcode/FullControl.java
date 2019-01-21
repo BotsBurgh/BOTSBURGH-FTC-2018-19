@@ -141,6 +141,12 @@ public class FullControl extends LinearOpMode{
                 motorF.setTargetPosition(motorF.getCurrentPosition());
                 motorB.setTargetPosition(motorB.getCurrentPosition());
 
+            } else if(gamepad1.start) {
+                motorF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                motorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                base.armBase(-.8);
+                motorF.setTargetPosition(motorF.getCurrentPosition());
+                motorB.setTargetPosition(motorB.getCurrentPosition());
             } else {
                 motorB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 motorF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
