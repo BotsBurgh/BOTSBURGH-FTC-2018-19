@@ -217,6 +217,7 @@ public class Movement {
      */
     public void armIntake(double speed) {
         wheel.setPower(speed);
+
     }
 
     /**
@@ -225,10 +226,10 @@ public class Movement {
      */
     public void armBase(double speed) {
         if (speed > 0) {
-            armBase.setPower(speed);
-            armBaseBack.setPower(-0.1);
+            armBase.setPower(-speed);
+            armBaseBack.setPower(-0.02);
         } else if (speed < 0) {
-            armBase.setPower(-0.1);
+            armBase.setPower(0.1);
             armBaseBack.setPower(-speed);
         } else {
             armBase.setPower(0);

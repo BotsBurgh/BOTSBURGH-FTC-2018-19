@@ -89,7 +89,7 @@ public class Arm extends LinearOpMode {
             } else if (gamepad1.left_trigger>0.3) {
                 arm.armIntake(-INTAKE_SPEED);
             } else {
-                arm.armIntake(0);
+                arm.armIntake(-.1);
             }
 
             if (gamepad1.a) {

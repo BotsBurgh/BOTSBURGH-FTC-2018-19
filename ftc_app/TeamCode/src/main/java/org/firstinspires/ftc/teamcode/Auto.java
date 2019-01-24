@@ -80,12 +80,12 @@ RF is Red Far    (Far from the red team's crater)
 public class Auto extends LinearOpMode {
     /* Declare OpMode members. */
     DcMotor motorFL,motorFR,motorBL,motorBR;  // Use a Pushbot's hardware
-    BNO055IMU gyro = null;// Additional Gyro device
+    BNO055IMU gyro;// Additional Gyro device
     Orientation angles;
     Acceleration gravity;
 
-    static final double COUNTS_PER_MOTOR_REV = 1440;    // eg: TETRIX Motor Encoder
-    static final double DRIVE_GEAR_REDUCTION = 2.0;     // This is < 1.0 if geared UP
+    static final double COUNTS_PER_MOTOR_REV = 1120;    // eg: TETRIX Motor Encoder
+    static final double DRIVE_GEAR_REDUCTION = 1;     // This is < 1.0 if geared UP
     static final double WHEEL_DIAMETER_INCHES = 4.0;     // For figuring circumference
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);
@@ -129,11 +129,13 @@ public class Auto extends LinearOpMode {
         motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        gyro.initialize(parameters);
+
         /*
          * Initialize the standard drive system variables.
          * The init() method of the hardware class does most of the work here
          */
-        Movement movement = new Movement(motorFL, motorFR, motorBL, motorBR, gyro);
+
 
 
         // Send telemetry message to alert driver that we are calibrating;
@@ -148,18 +150,21 @@ public class Auto extends LinearOpMode {
         motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         composeTelemetry();
+        telemetry.update();
+        waitForStart();
+        gyro.startAccelerationIntegration(new Position(), new Velocity(), 1000);
 
         // Wait for the game to start (Display Gyro value), and reset gyro before we move..
-        while (!isStarted()) {
-            telemetry.addData(">", "Robot Heading = %d",formatAngle(angles.angleUnit,angles.firstAngle) );
-            telemetry.update();
-        }
+
 
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
         // Put a hold after each turn
-        gyroDrive(DRIVE_SPEED, 48.0, 0.0);    // Drive FWD 48 inches
+
+        telemetry.update();
+        gyroDrive(DRIVE_SPEED, 10.0, 0.0);    // Drive FWD 48 inchees
+        /*
         gyroTurn(TURN_SPEED, -45.0);         // Turn  CCW to -45 Degrees
         gyroHold(TURN_SPEED, -45.0, 0.5);    // Hold -45 Deg heading for a 1/2 second
         gyroDrive(DRIVE_SPEED, 12.0, -45.0);  // Drive FWD 12 inches at 45 degrees
@@ -168,6 +173,7 @@ public class Auto extends LinearOpMode {
         gyroTurn(TURN_SPEED, 0.0);         // Turn  CW  to   0 Degrees
         gyroHold(TURN_SPEED, 0.0, 1.0);    // Hold  0 Deg heading for a 1 second
         gyroDrive(DRIVE_SPEED, -48.0, 0.0);    // Drive REV 48 inches
+        */
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
@@ -260,6 +266,7 @@ public class Auto extends LinearOpMode {
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
+            telemetry.update();
 
             // Determine new target position, and pass to motor controller
             moveCounts = (int) (distance * COUNTS_PER_INCH);
@@ -346,7 +353,7 @@ public class Auto extends LinearOpMode {
      *              If a relative angle is required, add/subtract from current heading.
      */
     public void gyroTurn(double speed, double angle) {
-
+        telemetry.update();
         // keep looping while we are still active, and not on heading.
         while (opModeIsActive() && !onHeading(speed, angle, P_TURN_COEFF)) {
             // Update telemetry & Allow time for other processes to run.

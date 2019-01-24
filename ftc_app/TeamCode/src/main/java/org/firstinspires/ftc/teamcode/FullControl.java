@@ -33,7 +33,7 @@ public class FullControl extends LinearOpMode{
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor motorFL, motorFR, motorBL, motorBR;
     private BNO055IMU gyro;
-    private DcMotor motorF, motorB;
+    private DcMotor motorF, motorB, collector;
     private Servo s1,s2, hook;
     private CRServo wheel;
     private double INTAKE_SPEED=0.5;
@@ -45,6 +45,7 @@ public class FullControl extends LinearOpMode{
         motorFR = hardwareMap.get(DcMotor.class,"fr");
         motorBL = hardwareMap.get(DcMotor.class,"bl");
         motorBR = hardwareMap.get(DcMotor.class,"br");
+        collector = hardwareMap.get(DcMotor.class, "collector");
 
         gyro = hardwareMap.get(BNO055IMU.class, "gyro");
 
@@ -69,7 +70,7 @@ public class FullControl extends LinearOpMode{
         s1.setDirection(Servo.Direction.REVERSE);
         s2.setDirection(Servo.Direction.FORWARD);
 
-        double pos = 0;
+        double pos = .7;
         double hook_pos = 0;
         motorF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -103,24 +104,25 @@ public class FullControl extends LinearOpMode{
             double brPower = y1 - x1+rotation;
 
             movement.quadMove(flPower, frPower, blPower, brPower);
-            telemetry.addData("Back Left", motorBL.getCurrentPosition());
-            telemetry.addData("Back Right",motorBL.getCurrentPosition());
-            telemetry.addData("Front Left",motorFL.getCurrentPosition());
-            telemetry.addData("Front right", motorFR.getCurrentPosition());
+            //telemetry.addData("Back Left", motorBL.getCurrentPosition());
+           // telemetry.addData("Back Right",motorBL.getCurrentPosition());
+            //telemetry.addData("Front Left",motorFL.getCurrentPosition());
+            //telemetry.addData("Front right", motorFR.getCurrentPosition());
 
 
             if(gamepad1.left_bumper) {
                 motorF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 motorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                if(sens.getPot()<20) {
+                if(sens.getPot()<50) {
                     base.armBase(0);
-                } else if(sens.getPot()<50) {
-                    base.armBase(-.1);
-                } else if(sens.getPot()<90) {
+                } else if(sens.getPot()<60) {
                     base.armBase(-.3);
+                } else if(sens.getPot()<70) {
+                    base.armBase(-.7);
                 } else {
                     base.armBase(-1);
                 }
+
                 motorF.setTargetPosition(motorF.getCurrentPosition());
                 motorB.setTargetPosition(motorB.getCurrentPosition());
 
@@ -128,23 +130,26 @@ public class FullControl extends LinearOpMode{
             } else if(gamepad1.right_bumper) {
                 motorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 motorF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                if(sens.getPot()>115) {
+                if(sens.getPot()>90) {
                     base.armBase(0);
-                } else if(sens.getPot() > 90) {
-                    base.armBase(.1);
-                } else if(sens.getPot() > 40) {
-                    base.armBase(.4);
-                    pos = .15;
-                } else {
+                } else if(sens.getPot() > 60) {
                     base.armBase(.5);
+                    pos = .3;
+                } else if(sens.getPot() > 30) {
+                    base.armBase(.7);
+                    pos = .3;
+                } else {
+                    base.armBase(.9);
                 }
+
+
                 motorF.setTargetPosition(motorF.getCurrentPosition());
                 motorB.setTargetPosition(motorB.getCurrentPosition());
 
-            } else if(gamepad1.start) {
+            } else if(gamepad1.back) {
                 motorF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 motorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                base.armBase(-.8);
+                base.armBase(-1);
                 motorF.setTargetPosition(motorF.getCurrentPosition());
                 motorB.setTargetPosition(motorB.getCurrentPosition());
             } else {
@@ -156,18 +161,24 @@ public class FullControl extends LinearOpMode{
 
             if (gamepad1.right_trigger>0.3) {
                 arm.armIntake(INTAKE_SPEED);
+                collector.setPower(.5);
             } else if (gamepad1.left_trigger>0.3) {
                 arm.armIntake(-INTAKE_SPEED);
+                collector.setPower(-.5);
             } else {
                 arm.armIntake(0);
+                collector.setPower(0);
             }
 
             if (gamepad1.a) {
-                pos = 0;
-                hook.setPosition(0);
+                if(hook_pos > 0) {
+                    hook_pos -= 0.1;
+                }
             }
             if(gamepad1.x) {
-                pos = .1;
+                if(pos<1) {
+                    pos += .01;
+                }
                 /*
                 if(pos<1) {
                     pos += .1;
@@ -176,7 +187,9 @@ public class FullControl extends LinearOpMode{
             }
 
             if (gamepad1.b) {
-                pos = .8;
+                if(pos > 0) {
+                    pos -= .01;
+                }
                 /*
                 if(pos > 0) {
                     pos -= .1;
@@ -184,32 +197,42 @@ public class FullControl extends LinearOpMode{
                 */
             }
             if(gamepad1.y) {
-                pos = .15;
+                if(hook_pos < 1) {
+                    hook_pos += 0.01;
+                }
             }
 
             if(gamepad1.dpad_up) {
-                hook_pos += 0.1;
+                if(hook_pos < 1) {
+                    hook_pos += 0.1;
+                }
             }
             if(gamepad1.dpad_right) {
-                pos += .05;
+                if(pos < 1) {
+                    pos += .05;
+                }
             }
             if(gamepad1.dpad_down) {
-                hook_pos -= .1;
+                if(hook_pos > 0) {
+                    hook_pos -= .1;
+                }
             }
             if(gamepad1.dpad_left) {
-                pos -= .04;
+                if(pos > 0) {
+                    pos -= .05;
+                }
             }
 
             hook.setPosition(hook_pos);
 
             if(sens.getPot()>80) {
-                pos = .1;
+                pos = .35;
             }
             arm.armSet(pos);
 
-            telemetry.addData("Height Power", gamepad1.left_stick_x);
             telemetry.addData("Angle", sens.getPot());
-            telemetry.addData("Expected Position", pos);
+            telemetry.addData("Expected Arm Position", pos);
+            telemetry.addData("Expected hook position", hook_pos);
             telemetry.addData("Actual Position Front", motorF.getCurrentPosition());
             telemetry.addData("Actual position back", motorB.getCurrentPosition());
 
