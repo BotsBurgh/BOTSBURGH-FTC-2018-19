@@ -30,3 +30,11 @@ Basic Movement:
     Right Stick
         - Left:  Turn Left
         - Right: Turn Right
+
+Arm:
+    DPad
+        - Up:    Turn Hook Clockwise
+        - Down:  Turn Hook Counterclockwise
+        - Right: Moves Upper Arm In
+        - Left:  Moves Upper Arm Out
+    
