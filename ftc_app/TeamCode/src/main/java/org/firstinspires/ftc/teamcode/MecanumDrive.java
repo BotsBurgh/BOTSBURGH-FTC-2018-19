@@ -39,7 +39,8 @@ public class MecanumDrive extends LinearOpMode {
         motorBR = hardwareMap.get(DcMotor.class,"br");
         gyro = hardwareMap.get(BNO055IMU.class, "gyro");
         motorFL.setDirection(DcMotor.Direction.REVERSE);
-        motorBL.setDirection(DcMotor.Direction.REVERSE);
+        motorBL.setDirection(DcMotor.Direction.FORWARD);
+        motorBR.setDirection(DcMotor.Direction.REVERSE);
 
         motorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -63,10 +64,33 @@ public class MecanumDrive extends LinearOpMode {
             double y1 = gamepad1.left_stick_y;
             double rotation = gamepad1.right_stick_x;
 
+            // Uses gamepad 2 to make it constant speed
+
+            double x2 = gamepad2.left_stick_x;
+            double y2 = gamepad2.left_stick_y;
+            double rotation2 = gamepad2.right_stick_y;
+            if(x2>.5) {
+                x1= .5;
+            } else if(x2<-.5) {
+                x1= -.5;
+            }
+            if(y2>.5) {
+                y1 = .5;
+            } else if(y2 < -.5) {
+                y1 = -.5;
+            }
+            if(rotation2 > .5) {
+                rotation = .5;
+            } else if(rotation2 < -.5) {
+                rotation = -.5;
+            }
+
+
             double flPower = y1 - x1-rotation;
             double frPower = y1 + x1+rotation;
             double blPower = y1 + x1-rotation;
             double brPower = y1 - x1+rotation;
+
 
             movement.quadMove(flPower, frPower, blPower, brPower);
             telemetry.addData("Back Left", motorBL.getCurrentPosition());
