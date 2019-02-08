@@ -114,13 +114,13 @@ public class FullControl extends LinearOpMode{
                 motorF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 motorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 if(sens.getPot()<50) {
-                    base.armBase(0);
+                    //base.armBase(0);
                 } else if(sens.getPot()<60) {
-                    base.armBase(-.3);
+                    //base.armBase(-.3);
                 } else if(sens.getPot()<70) {
-                    base.armBase(-.7);
+                    //base.armBase(-.7);
                 } else {
-                    base.armBase(-1);
+                    //base.armBase(-1);
                 }
 
                 motorF.setTargetPosition(motorF.getCurrentPosition());
@@ -131,15 +131,15 @@ public class FullControl extends LinearOpMode{
                 motorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 motorF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 if(sens.getPot()>90) {
-                    base.armBase(0);
+                    //base.armBase(0);
                 } else if(sens.getPot() > 60) {
-                    base.armBase(.5);
+                    //base.armBase(.5);
                     pos = .3;
                 } else if(sens.getPot() > 30) {
-                    base.armBase(.7);
+                    //base.armBase(.7);
                     pos = .3;
                 } else {
-                    base.armBase(.9);
+                    //base.armBase(.9);
                 }
 
 
@@ -149,7 +149,7 @@ public class FullControl extends LinearOpMode{
             } else if(gamepad1.back) {
                 motorF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 motorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                base.armBase(-1);
+                //base.armBase(-1);
                 motorF.setTargetPosition(motorF.getCurrentPosition());
                 motorB.setTargetPosition(motorB.getCurrentPosition());
             } else {
@@ -228,7 +228,7 @@ public class FullControl extends LinearOpMode{
             if(sens.getPot()>80) {
                 pos = .35;
             }
-            arm.armSet(pos);
+            //arm.armSet(pos);
 
             telemetry.addData("Angle", sens.getPot());
             telemetry.addData("Expected Arm Position", pos);

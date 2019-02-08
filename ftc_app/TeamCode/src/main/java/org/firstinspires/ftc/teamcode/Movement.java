@@ -51,7 +51,7 @@ public class Movement {
     private BNO055IMU gyro;
     private Servo s1, s2;
     private CRServo wheel;
-    private DcMotor armBase, armBaseBack;
+    private DcMotor armTilt, armExtend;
 
     /**
      * Initialize the class with driving functionality
@@ -71,12 +71,12 @@ public class Movement {
 
     /**
      * Initialize the class with just the lower arm functionality
-     * @param armBase The motor connected to the arm at the axle
-     * @param armBaseBack The motor connected to the arm at the center
+     * @param armTilt The motor moving the arm
+     * @param armExtend The motor extending the arm
      */
-    Movement(DcMotor armBase,DcMotor armBaseBack) {
-        this.armBase = armBase;
-        this.armBaseBack = armBaseBack;
+    Movement(DcMotor armTilt, DcMotor armExtend) {
+        this.armTilt = armTilt;
+        this.armExtend = armExtend;
     }
 
     /**
@@ -194,21 +194,11 @@ public class Movement {
         motorBR.setPower(brPower);
     }
 
-    /**
-     * Zeros the servos on the arm. Here because we have digital servos that need to be zeroed.
-     */
-    public void armZero() {
-        s1.setPosition(0);
-        s2.setPosition(ARM_SERVO); // 270 because it is opposite
-    }
-
-    /**
-     * Sets the arm angle
-     * @param pos Position from 0-270 degrees
-     */
-    public void armSet(double pos) {
-        s1.setPosition(pos);
-        s2.setPosition(pos);
+    public void armTilt(double degrees) {
+        armTilt.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        int target = (int)((27.0*degrees)/28.0);
+        armTilt.setTargetPosition(target);
+        armTilt.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     /**
@@ -218,23 +208,6 @@ public class Movement {
     public void armIntake(double speed) {
         wheel.setPower(speed);
 
-    }
-
-    /**
-     * Moves the base of the arm with two motors.
-     * @param speed Speed of the arm extending. If negative, the arm will retract.
-     */
-    public void armBase(double speed) {
-        if (speed > 0) {
-            armBase.setPower(-speed);
-            armBaseBack.setPower(-0.02);
-        } else if (speed < 0) {
-            armBase.setPower(0.1);
-            armBaseBack.setPower(-speed);
-        } else {
-            armBase.setPower(0);
-            armBaseBack.setPower(0);
-        }
     }
 
     //----------------------------------------------------------------------------------------------
