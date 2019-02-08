@@ -29,7 +29,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Hardware;
 import com.qualcomm.robotcore.util.Range;
 // TODO: JavaDoc + comments
-@TeleOp(name = "Apache", group = "Linear OpMode")
+@TeleOp(name = "New Arm", group = "Linear OpMode")
 public class NewArm extends LinearOpMode {
     static final double COUNTS_PER_MOTOR_REV = 537.6;    // eg: TETRIX Motor Encoder
     static final double DRIVE_GEAR_REDUCTION = 2.0;     // This is < 1.0 if geared UP
