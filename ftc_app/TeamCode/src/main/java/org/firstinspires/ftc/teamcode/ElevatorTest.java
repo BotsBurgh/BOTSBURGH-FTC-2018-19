@@ -86,7 +86,7 @@ public class ElevatorTest extends LinearOpMode {
 
         // Connect to motor (Assume standard left wheel)
         // Change the text in quotes to match any motor name on your robot.
-       // motor = hardwareMap.get(DcMotor.class, "elevator");
+        motor = hardwareMap.get(DcMotor.class, "elevator");
 
         // Wait for the start button
         telemetry.addData(">", "Press Start to run Motors." );
@@ -117,17 +117,17 @@ public class ElevatorTest extends LinearOpMode {
 
             // Set the motor to the new power and pause;
 
-            /*
+
             motor.setPower(power);
             sleep(CYCLE_MS);
             idle();
-            */
+
         }
 
         // Turn off motor and signal done;
-        /*
+
         motor.setPower(0);
-        */
+
         telemetry.addData(">", "Done");
         telemetry.update();
 
