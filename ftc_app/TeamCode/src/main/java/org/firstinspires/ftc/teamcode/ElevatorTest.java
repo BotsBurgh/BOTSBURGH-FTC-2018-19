@@ -53,6 +53,7 @@ public class ElevatorTest extends LinearOpMode {
     double  power   = 0;
     // Defaults to moving up
     int direction = UP;
+    boolean switched = false;
 
     ColorSensor sensorColor;
     DistanceSensor sensorDistance;
@@ -85,7 +86,7 @@ public class ElevatorTest extends LinearOpMode {
 
         // Connect to motor (Assume standard left wheel)
         // Change the text in quotes to match any motor name on your robot.
-        motor = hardwareMap.get(DcMotor.class, "elevator");
+       // motor = hardwareMap.get(DcMotor.class, "elevator");
 
         // Wait for the start button
         telemetry.addData(">", "Press Start to run Motors." );
@@ -97,8 +98,12 @@ public class ElevatorTest extends LinearOpMode {
 
 
             if(sensorColor.red()> 40 && (sensorColor.red()>sensorColor.green()) && sensorColor.red() > sensorColor.blue()) {
-                if(direction == UP) direction = DOWN;
-                else direction = UP;
+                if (direction == UP && !switched) { direction = DOWN; switched = true;}
+                else if(direction == DOWN && !switched) {direction = UP; switched = true;}
+                telemetry.addData("Can Go UP", direction == UP);
+
+            } else {
+                switched = false;
             }
             if((gamepad2.left_stick_y > 0 && direction == DOWN) || gamepad2.left_stick_y < 0 && direction == UP) {
                 power = 0;
@@ -111,13 +116,18 @@ public class ElevatorTest extends LinearOpMode {
             telemetry.update();
 
             // Set the motor to the new power and pause;
+
+            /*
             motor.setPower(power);
             sleep(CYCLE_MS);
             idle();
+            */
         }
 
         // Turn off motor and signal done;
+        /*
         motor.setPower(0);
+        */
         telemetry.addData(">", "Done");
         telemetry.update();
 
