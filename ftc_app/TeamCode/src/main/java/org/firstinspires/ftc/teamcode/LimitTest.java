@@ -33,12 +33,14 @@ public class LimitTest extends LinearOpMode {
     @Override
     public void runOpMode() {
         Button lim1 = new Button(hardwareMap.get(DigitalChannel.class, "lim1"));
+        Button lim2 = new Button(hardwareMap.get(DigitalChannel.class, "t1"));
         telemetry.addData("> ", "Press Start to run.");
         telemetry.update();
         waitForStart();
         // TODO: Comments
         while(opModeIsActive()) {
-            telemetry.addData("Button: ", lim1.isPressed());
+            telemetry.addData("Button 1", lim1.isPressed());
+            telemetry.addData("Button 2", lim2.isPressed());
             telemetry.update();
         }
     }
