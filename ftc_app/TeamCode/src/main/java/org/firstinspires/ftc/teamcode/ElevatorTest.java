@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 
@@ -52,7 +53,7 @@ public class ElevatorTest extends LinearOpMode {
     DcMotor motor;
     double  power   = 0;
     // Defaults to moving up
-    int direction = UP;
+    int direction = DOWN;
     boolean switched = false;
 
     ColorSensor sensorColor;
@@ -86,10 +87,11 @@ public class ElevatorTest extends LinearOpMode {
 
         // Connect to motor (Assume standard left wheel)
         // Change the text in quotes to match any motor name on your robot.
-       // motor = hardwareMap.get(DcMotor.class, "elevator");
+        motor = hardwareMap.get(DcMotor.class, "elevator");
 
         // Wait for the start button
         telemetry.addData(">", "Press Start to run Motors." );
+        motor.setDirection(DcMotorSimple.Direction.REVERSE);
         telemetry.update();
         waitForStart();
 
@@ -110,8 +112,13 @@ public class ElevatorTest extends LinearOpMode {
             } else {
                 power = gamepad2.left_stick_y;
             }
+            if(gamepad2.a) {
+                direction = UP;
+            }
+            if(gamepad2.b) {direction = DOWN;}
             // Display the current value
             telemetry.addData("Motor Power", "%5.2f", power);
+            telemetry.addData("Direction", direction);
             telemetry.addData(">", "Press Stop to end test." );
             telemetry.update();
 
