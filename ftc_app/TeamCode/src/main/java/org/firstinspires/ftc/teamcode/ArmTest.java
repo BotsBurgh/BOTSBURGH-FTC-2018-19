@@ -7,34 +7,39 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @TeleOp(name = "Arm Test", group = "Test")
 public class ArmTest extends LinearOpMode {
     DcMotor extend, arm;
-    double aPower = 0.3;
-    double ePower = 0.3;
+    double aPower = 1.0;
+    //double ePower = 0.3;
     @Override
     public void runOpMode() {
-        extend = hardwareMap.get(DcMotor.class,"extend");
-        extend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //extend = hardwareMap.get(DcMotor.class,"extend");
+        //extend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         arm = hardwareMap.get(DcMotor.class,"arm");
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         telemetry.addData(">", "Press start");
         telemetry.update();
         waitForStart();
         while (opModeIsActive()) {
             arm.setPower(aPower);
-            extend.setPower(ePower);
+            //extend.setPower(ePower);
 
             if (gamepad1.a) {
-                move(arm, aPower, 1);
+                move(arm, aPower, 50);
             } else if (gamepad1.b) {
-                move(arm, aPower, -1);
+                move(arm, aPower, -50);
+            } else {
+                arm.setPower(0);
             }
-            if (gamepad1.x) {
-                move(extend, ePower, 1);
-            } else if (gamepad1.y) {
-                move(extend, ePower, -1);
-            }
+            //if (gamepad1.x) {
+            //    move(extend, ePower, 50);
+            //} else if (gamepad1.y) {
+            //    move(extend, ePower, -50);
+            //}
         }
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     public void move(DcMotor motor, double speed, int tic) {
         int target;
@@ -47,6 +52,7 @@ public class ArmTest extends LinearOpMode {
             motor.setTargetPosition(target);
 
             // Turn On RUN_TO_POSITION
+            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // reset the timeout time and start motion.
@@ -70,7 +76,7 @@ public class ArmTest extends LinearOpMode {
             motor.setPower(0);
 
             // Turn off RUN_TO_POSITION
-            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            //motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             //  sleep(250);   // optional pause after each move
         }
