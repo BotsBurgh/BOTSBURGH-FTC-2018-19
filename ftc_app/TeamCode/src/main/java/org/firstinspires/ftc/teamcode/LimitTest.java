@@ -16,6 +16,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
@@ -28,7 +29,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  * TODO: javadoc
  */
 @TeleOp(name = "Limit Test", group = "Linear Op Mode")
-
+@Disabled
 public class LimitTest extends LinearOpMode {
     @Override
     public void runOpMode() {

@@ -24,7 +24,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -85,7 +84,7 @@ public class FullControl extends LinearOpMode{
         Movement base = new Movement(motorF,motorB);
         Movement arm = new Movement(s1,s2,wheel);
 
-        Sensors sens = new Sensors(pot);
+        Sensor sens = new Sensor(pot);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
