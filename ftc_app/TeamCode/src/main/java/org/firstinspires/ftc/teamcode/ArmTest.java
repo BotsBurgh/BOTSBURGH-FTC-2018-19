@@ -8,9 +8,12 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 @TeleOp(name = "Arm Test", group = "Test")
 public class ArmTest extends LinearOpMode {
+    static final double THRESH = 5;
+    static final double STEP   = 0.05;
     DcMotor extend, arm;
     double aPower = 1.0;
     double ePower = 0.3;
+    double c=0;
     Sensor pot, limit;
     @Override
     public void runOpMode() {
@@ -20,14 +23,18 @@ public class ArmTest extends LinearOpMode {
         extend = hardwareMap.get(DcMotor.class,"extend");
         extend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        extend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         arm = hardwareMap.get(DcMotor.class,"arm");
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         telemetry.addData(">", "Press start");
         telemetry.update();
+
         waitForStart();
+
         telemetry.addData(">", "Press stop");
         telemetry.update();
 
@@ -41,7 +48,7 @@ public class ArmTest extends LinearOpMode {
             } else if (gamepad1.b) {
                 moveArm(arm, -aPower);
             } else {
-                arm.setPower(0);
+                freezeArm();
             }
 
             if (gamepad1.x) {
@@ -77,6 +84,19 @@ public class ArmTest extends LinearOpMode {
 
             // Stop all motion;
             motor.setPower(0);
+        }
+    }
+
+    public void freezeArm() {
+        double zero = pot.getPot();
+        if ((pot.getPot()-zero)>THRESH) {
+            arm.setPower(c);
+            c+=STEP;
+        } else if ((pot.getPot()-zero)<THRESH) {
+            arm.setPower(-c);
+            c-=STEP;
+        } else {
+            c=0;
         }
     }
 
