@@ -154,8 +154,6 @@ public class Auto extends LinearOpMode {
         waitForStart();
         gyro.startAccelerationIntegration(new Position(), new Velocity(), 1000);
 
-        // Wait for the game to start (Display Gyro value), and reset gyro before we move..
-
 
 
         // Step through each leg of the path,
@@ -163,7 +161,9 @@ public class Auto extends LinearOpMode {
         // Put a hold after each turn
 
         telemetry.update();
+
         gyroDrive(DRIVE_SPEED, 10.0, 0.0);    // Drive FWD 48 inchees
+
         /*
         gyroTurn(TURN_SPEED, -45.0);         // Turn  CCW to -45 Degrees
         gyroHold(TURN_SPEED, -45.0, 0.5);    // Hold -45 Deg heading for a 1/2 second
@@ -255,8 +255,10 @@ public class Auto extends LinearOpMode {
                           double distance,
                           double angle) {
 
-        int newLeftTarget;
-        int newRightTarget;
+        int newFrontLeftTarget;
+        int newFrontRightTarget;
+        int newBackLeftTarget;
+        int newBackRightTarget;
         int moveCounts;
         double max;
         double error;
@@ -270,14 +272,16 @@ public class Auto extends LinearOpMode {
 
             // Determine new target position, and pass to motor controller
             moveCounts = (int) (distance * COUNTS_PER_INCH);
-            newLeftTarget = motorBL.getCurrentPosition() + moveCounts;
-            newRightTarget = motorBR.getCurrentPosition() + moveCounts;
+            newBackLeftTarget = motorBL.getCurrentPosition() + moveCounts;
+            newBackRightTarget = motorBR.getCurrentPosition() + moveCounts;
+            newFrontLeftTarget = motorFL.getCurrentPosition() + moveCounts;
+            newFrontRightTarget = motorFR.getCurrentPosition() + moveCounts;
 
             // Set Target and Turn On RUN_TO_POSITION
-            motorBL.setTargetPosition(newLeftTarget);
-            motorFL.setTargetPosition(newLeftTarget);
-            motorBR.setTargetPosition(newRightTarget);
-            motorFR.setTargetPosition(newRightTarget);
+            motorBL.setTargetPosition(newBackLeftTarget);
+            motorFL.setTargetPosition(newFrontLeftTarget);
+            motorBR.setTargetPosition(newBackRightTarget);
+            motorFR.setTargetPosition(newFrontRightTarget);
 
             motorBL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motorBR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -293,12 +297,12 @@ public class Auto extends LinearOpMode {
 
             // keep looping while we are still active, and BOTH motors are running.
             while (opModeIsActive() &&
-                    (motorBL.isBusy() && motorBR.isBusy())) {
+                    (motorBL.isBusy() && motorBR.isBusy()) &&  motorFL.isBusy() && motorFR.isBusy()) {
 
                 // adjust relative speed based on heading error.
                 error = getError(angle);
                 steer = getSteer(error, P_DRIVE_COEFF);
-
+/*
                 // if driving in reverse, the motor correction also needs to be reversed
                 if (distance < 0)
                     steer *= -1.0;
@@ -317,13 +321,14 @@ public class Auto extends LinearOpMode {
                 motorBL.setPower(leftSpeed);
                 motorFR.setPower(rightSpeed);
                 motorBR.setPower(rightSpeed);
+                */
 
                 // Display drive status for the driver.
                 telemetry.addData("Err/St", "%5.1f/%5.1f", error, steer);
-                telemetry.addData("Target", "%7d:%7d", newLeftTarget, newRightTarget);
+                telemetry.addData("Target", "%7d:%7d", newBackLeftTarget,newBackRightTarget);
                 telemetry.addData("Actual", "%7d:%7d", motorBL.getCurrentPosition(),
                         motorBR.getCurrentPosition());
-                telemetry.addData("Speed", "%5.2f:%5.2f", leftSpeed, rightSpeed);
+                telemetry.addData("Speed", "%5.2f:%5.2f", speed, speed);
                 telemetry.update();
             }
 

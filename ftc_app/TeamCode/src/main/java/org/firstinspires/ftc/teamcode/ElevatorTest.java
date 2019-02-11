@@ -112,6 +112,7 @@ public class ElevatorTest extends LinearOpMode {
             } else {
                 power = gamepad2.left_stick_y;
             }
+            // Let User manually change direction
             if(gamepad2.a) {
                 direction = UP;
             }
