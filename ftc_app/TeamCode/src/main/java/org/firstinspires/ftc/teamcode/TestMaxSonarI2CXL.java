@@ -40,21 +40,21 @@ public class TestMaxSonarI2CXL extends LinearOpMode {
     @Override
     public void runOpMode() {
         _sonarLeft = hardwareMap.get(MaxSonarI2CXL.class, "sonar_left");
-        _sonarRight = hardwareMap.get(MaxSonarI2CXL.class, "sonar_right");
+    //    _sonarRight = hardwareMap.get(MaxSonarI2CXL.class, "sonar_right");
 
         _sonarLeft.setI2cAddress(I2cAddr.create8bit(0xE0));
-        _sonarRight.setI2cAddress(I2cAddr.create8bit(0xDE));
+     //   _sonarRight.setI2cAddress(I2cAddr.create8bit(0xDE));
 
         _sonarManager = new SonarArrayManager();
         _sonarManager.addSonar("left", _sonarLeft);
-        _sonarManager.addSonar("right", _sonarRight);
+     //   _sonarManager.addSonar("right", _sonarRight);
 
 //        I2cDeviceSynch.ReadWindow readWindow = new I2cDeviceSynch.ReadWindow (1, 2, I2cDeviceSynch.ReadMode.REPEAT);
 //        _sonar.setReadWindow(readWindow);
 
         telemetry.addData("Status", "7");
         telemetry.addData("_sonarLeft.getConnectionInfo()", _sonarLeft.getConnectionInfo());
-        telemetry.addData("_sonarRight.getConnectionInfo()", _sonarRight.getConnectionInfo());
+       // telemetry.addData("_sonarRight.getConnectionInfo()", _sonarRight.getConnectionInfo());
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
@@ -68,10 +68,10 @@ public class TestMaxSonarI2CXL extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
 
             double distanceLeft = _sonarManager.getDistance("left");
-            double distanceRight = _sonarManager.getDistance("right");
+        //    double distanceRight = _sonarManager.getDistance("right");
 
             telemetry.addData("Status", "Distance left: " + distanceLeft);
-            telemetry.addData("Status", "Distance right: " + distanceRight);
+        //    telemetry.addData("Status", "Distance right: " + distanceRight);
             telemetry.update();
         }
 
