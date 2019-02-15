@@ -20,7 +20,11 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -76,13 +80,19 @@ RF is Red Far    (Far from the red team's crater)
 
 // Tests
 // TODO: JavaDoc
-@Autonomous(name="encoderTest")
+@Autonomous(name="Gyro Test")
 public class Auto extends LinearOpMode {
     /* Declare OpMode members. */
-    DcMotor motorFL,motorFR,motorBL,motorBR;  // Use a Pushbot's hardware
+    DcMotor motorFL,motorFR,motorBL,motorBR;
+    DcMotor elevator;
     BNO055IMU gyro;// Additional Gyro device
     Orientation angles;
     Acceleration gravity;
+    ColorSensor sensorColor;
+    DistanceSensor sensorDistance;
+    ElapsedTime runtime  = new ElapsedTime();
+    Servo holder;
+
 
     static final double COUNTS_PER_MOTOR_REV = 1120;    // eg: TETRIX Motor Encoder
     static final double DRIVE_GEAR_REDUCTION = 1;     // This is < 1.0 if geared UP
@@ -95,7 +105,7 @@ public class Auto extends LinearOpMode {
     static final double DRIVE_SPEED = 0.7;     // Nominal speed for better accuracy.
     static final double TURN_SPEED = 0.5;     // Nominal half speed for better accuracy.
 
-    static final double HEADING_THRESHOLD = 1;      // As tight as we can make it with an integer gyro
+    static final double HEADING_THRESHOLD = 5;      // As tight as we can make it with an integer gyro
     static final double P_TURN_COEFF = 0.1;     // Larger is more responsive, but also less stable
     static final double P_DRIVE_COEFF = 0.15;     // Larger is more responsive, but also less stable
 
@@ -116,13 +126,23 @@ public class Auto extends LinearOpMode {
         gyro = hardwareMap.get(BNO055IMU.class, "gyro");
         gyro.initialize(parameters);
 
+        sensorColor = hardwareMap.get(ColorSensor.class,"sensor_color_distance");
+        sensorDistance = hardwareMap.get(DistanceSensor.class,"sensor_color_distance");
+
         motorFL = hardwareMap.get(DcMotor.class,"fl");
         motorFR = hardwareMap.get(DcMotor.class,"fr");
         motorBL = hardwareMap.get(DcMotor.class,"bl");
         motorBR = hardwareMap.get(DcMotor.class,"br");
+
+        elevator = hardwareMap.get(DcMotor.class,"elevator");
+
+        holder = hardwareMap.get(Servo.class, "holder");
+
         gyro = hardwareMap.get(BNO055IMU.class, "gyro");
         motorFL.setDirection(DcMotor.Direction.REVERSE);
         motorBL.setDirection(DcMotor.Direction.REVERSE);
+        elevator.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
         motorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -145,14 +165,18 @@ public class Auto extends LinearOpMode {
         telemetry.addData(">", "Robot Ready.");    //
         telemetry.update();
 
-        motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         composeTelemetry();
         telemetry.update();
+        runtime.reset();
         waitForStart();
         gyro.startAccelerationIntegration(new Position(), new Velocity(), 1000);
+        motorBL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorFL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorFR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+
 
 
 
@@ -161,25 +185,56 @@ public class Auto extends LinearOpMode {
         // Put a hold after each turn
 
         telemetry.update();
+        runtime.reset();
 
-        gyroDrive(DRIVE_SPEED, 10.0, 0.0);    // Drive FWD 48 inchees
+        while(runtime.seconds() < .5) {
+            elevator.setPower(1);
+        } while(sensorColor.red()<sensorColor.blue() || sensorColor.red()< sensorColor.green()) {
+            elevator.setPower(1);
+        }
 
-        /*
-        gyroTurn(TURN_SPEED, -45.0);         // Turn  CCW to -45 Degrees
-        gyroHold(TURN_SPEED, -45.0, 0.5);    // Hold -45 Deg heading for a 1/2 second
-        gyroDrive(DRIVE_SPEED, 12.0, -45.0);  // Drive FWD 12 inches at 45 degrees
-        gyroTurn(TURN_SPEED, 45.0);         // Turn  CW  to  45 Degrees
-        gyroHold(TURN_SPEED, 45.0, 0.5);    // Hold  45 Deg heading for a 1/2 second
-        gyroTurn(TURN_SPEED, 0.0);         // Turn  CW  to   0 Degrees
-        gyroHold(TURN_SPEED, 0.0, 1.0);    // Hold  0 Deg heading for a 1 second
-        gyroDrive(DRIVE_SPEED, -48.0, 0.0);    // Drive REV 48 inches
-        */
+        elevator.setPower(0);
+        gyroStrafe(DRIVE_SPEED,10,0.0);
+
+
+        holder.setPosition(1);
+        sleep(500);
+
+        gyroDrive(DRIVE_SPEED, 20.0, 0.0);
+        gyroStrafe(DRIVE_SPEED,-10,0.0);
+
+        gyroDrive(DRIVE_SPEED, -8,0.0);
+        gyroTurn(TURN_SPEED,90.0);
+        gyroDrive(DRIVE_SPEED,45.0,90);
+        gyroTurn(TURN_SPEED,135);
+        telemetry.update();
+        gyroDrive(DRIVE_SPEED,45,135);
+
+        holder.setPosition(.5);
+        sleep(100);
+        holder.setPosition(0);
+        sleep(100);
+        holder.setPosition(1);
+        sleep(100);
+
+        gyroDrive(DRIVE_SPEED, -72, 135);
+
+        runtime.reset();
+        while(runtime.seconds()<.5) {
+            elevator.setPower(-1);
+        } while(sensorColor.red()<sensorColor.blue() || sensorColor.red() < sensorColor.green()) {
+            elevator.setPower(-1);
+        }
+
+
+
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
     }
 
     void composeTelemetry() {
+
 
         // At the beginning of each telemetry update, grab a bunch of data
         // from the IMU that we will then display in separate lines.
@@ -251,6 +306,37 @@ public class Auto extends LinearOpMode {
      *                 0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
      *                 If a relative angle is required, add/subtract from current heading.
      */
+    public void gyroStrafe(double speed, double distance, double angle) {
+        int moveCounts,newBackLeftTarget,newBackRightTarget,newFrontLeftTarget,newFrontRightTarget;
+
+        double leftSpeed,rightSpeed, max;
+
+        double error;
+        double steer;
+        moveCounts = (int) (distance * COUNTS_PER_INCH);
+        newBackLeftTarget = motorBL.getCurrentPosition()+moveCounts;
+        newBackRightTarget = motorBR.getCurrentPosition()-moveCounts;
+        newFrontLeftTarget = motorFL.getCurrentPosition()-moveCounts;
+        newFrontRightTarget = motorFR.getCurrentPosition()+moveCounts;
+        motorBL.setTargetPosition(newBackLeftTarget);
+        motorBR.setTargetPosition(newBackRightTarget);
+        motorFL.setTargetPosition(newFrontLeftTarget);
+        motorFR.setTargetPosition(newFrontRightTarget);
+
+        motorBL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorBR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorFL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorFR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        motorBL.setPower(speed);
+        motorBR.setPower(speed);
+        motorFL.setPower(speed);
+        motorFR.setPower(speed);
+
+        while(opModeIsActive()&& (motorFL.isBusy() || motorFR.isBusy() || motorBL.isBusy() || motorBR.isBusy())) {
+
+        }
+    }
     public void gyroDrive(double speed,
                           double distance,
                           double angle) {
@@ -297,12 +383,12 @@ public class Auto extends LinearOpMode {
 
             // keep looping while we are still active, and BOTH motors are running.
             while (opModeIsActive() &&
-                    (motorBL.isBusy() && motorBR.isBusy()) &&  motorFL.isBusy() && motorFR.isBusy()) {
+                    (motorBL.isBusy() || motorBR.isBusy() ||  motorFL.isBusy() || motorFR.isBusy())) {
 
                 // adjust relative speed based on heading error.
                 error = getError(angle);
                 steer = getSteer(error, P_DRIVE_COEFF);
-/*
+
                 // if driving in reverse, the motor correction also needs to be reversed
                 if (distance < 0)
                     steer *= -1.0;
@@ -321,7 +407,7 @@ public class Auto extends LinearOpMode {
                 motorBL.setPower(leftSpeed);
                 motorFR.setPower(rightSpeed);
                 motorBR.setPower(rightSpeed);
-                */
+
 
                 // Display drive status for the driver.
                 telemetry.addData("Err/St", "%5.1f/%5.1f", error, steer);
@@ -359,8 +445,9 @@ public class Auto extends LinearOpMode {
      */
     public void gyroTurn(double speed, double angle) {
         telemetry.update();
+        runtime.reset();
         // keep looping while we are still active, and not on heading.
-        while (opModeIsActive() && !onHeading(speed, angle, P_TURN_COEFF)) {
+        while (opModeIsActive() && !onHeading(speed, angle, P_TURN_COEFF) && runtime.seconds() < 3) {
             // Update telemetry & Allow time for other processes to run.
             telemetry.update();
         }
@@ -452,6 +539,7 @@ public class Auto extends LinearOpMode {
         double robotError;
 
         // calculate error in -179 to +180 range  (
+        telemetry.update();
         robotError = targetAngle - Double.parseDouble(formatAngle(angles.angleUnit,angles.firstAngle));
         while (robotError > 180) robotError -= 360;
         while (robotError <= -180) robotError += 360;
@@ -466,7 +554,7 @@ public class Auto extends LinearOpMode {
      * @return
      */
     public double getSteer(double error, double PCoeff) {
-        return Range.clip(error * PCoeff, -1, 1);
+        return Range.clip(-error * PCoeff, -1, 1);
     }
 
     String formatAngle(AngleUnit angleUnit, double angle) {

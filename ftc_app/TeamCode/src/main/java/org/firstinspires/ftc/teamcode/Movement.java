@@ -130,18 +130,18 @@ public class Movement {
      * Turns the robot with the gyroscope
      * @param angles Turns the robot with an Orientation object
      */
-    public void gyroTurn(Orientation angles) {
+    public void gyroTurn(double angles) {
         gyro.startAccelerationIntegration(new Position(), new Velocity(), 1000);
         Orientation current = gyro.getAngularOrientation();
-        if (current.firstAngle > angles.firstAngle) {
-            while (current.firstAngle != angles.firstAngle) {
+        if (current.firstAngle > angles) {
+            while (Math.abs(current.firstAngle - angles)>5) {
                 motorFL.setPower(TURN_POWER);
                 motorFR.setPower(-TURN_POWER);
                 motorBL.setPower(TURN_POWER);
                 motorBR.setPower(-TURN_POWER);
             }
-        } else if (current.firstAngle < angles.firstAngle) {
-            while (current.firstAngle != angles.firstAngle) {
+        } else if (current.firstAngle < angles) {
+            while (Math.abs(current.firstAngle-angles)>5) {
                 motorFL.setPower(-TURN_POWER);
                 motorFR.setPower(TURN_POWER);
                 motorBL.setPower(-TURN_POWER);

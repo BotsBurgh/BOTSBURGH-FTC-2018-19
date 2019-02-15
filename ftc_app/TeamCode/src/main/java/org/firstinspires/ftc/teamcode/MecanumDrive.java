@@ -14,6 +14,8 @@ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -39,8 +41,7 @@ public class MecanumDrive extends LinearOpMode {
         motorBR = hardwareMap.get(DcMotor.class,"br");
         gyro = hardwareMap.get(BNO055IMU.class, "gyro");
         motorFL.setDirection(DcMotor.Direction.REVERSE);
-        motorBL.setDirection(DcMotor.Direction.FORWARD);
-        motorBR.setDirection(DcMotor.Direction.REVERSE);
+        motorBL.setDirection(DcMotor.Direction.REVERSE);
 
         motorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -69,6 +70,7 @@ public class MecanumDrive extends LinearOpMode {
             double x2 = gamepad2.left_stick_x;
             double y2 = gamepad2.left_stick_y;
             double rotation2 = gamepad2.right_stick_y;
+            /*
             if(x2>.5) {
                 x1= .5;
             } else if(x2<-.5) {
@@ -91,12 +93,31 @@ public class MecanumDrive extends LinearOpMode {
             double blPower = y1 + x1-rotation;
             double brPower = y1 - x1+rotation;
 
+*/
+            double flPower,frPower,blPower,brPower;
+            if(y1>.5) {
+                 flPower = .5;
+                 frPower = .5;
+                 blPower = .5;
+                 brPower = .5;
+            } else if(y1<-.5) {
+                flPower = -.5;
+                frPower = -.5;
+                blPower = -.5;
+                brPower = -.5;
+            } else {
+                flPower = 0;
+                frPower = 0;
+                blPower = 0;
+                brPower = 0;
+            }
 
             movement.quadMove(flPower, frPower, blPower, brPower);
             telemetry.addData("Back Left", motorBL.getCurrentPosition());
-            telemetry.addData("Back Right",motorBL.getCurrentPosition());
+            telemetry.addData("Back Right",motorBR.getCurrentPosition());
             telemetry.addData("Front Left",motorFL.getCurrentPosition());
             telemetry.addData("FRont right", motorFR.getCurrentPosition());
+            telemetry.update();
         }
 
     }

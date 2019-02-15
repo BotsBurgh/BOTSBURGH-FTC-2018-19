@@ -310,6 +310,7 @@ public class VuForia extends LinearOpMode {
                 telemetry.addData("Visible Target", "none");
             }
             telemetry.update();
+
         }
     }
 }
