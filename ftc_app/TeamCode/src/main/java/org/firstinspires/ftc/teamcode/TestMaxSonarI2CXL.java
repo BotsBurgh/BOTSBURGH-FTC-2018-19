@@ -40,6 +40,7 @@ public class TestMaxSonarI2CXL extends LinearOpMode {
     @Override
     public void runOpMode() {
         _sonarLeft = hardwareMap.get(MaxSonarI2CXL.class, "sonar_left");
+<<<<<<< HEAD
     //    _sonarRight = hardwareMap.get(MaxSonarI2CXL.class, "sonar_right");
 
         _sonarLeft.setI2cAddress(I2cAddr.create8bit(0xE0));
@@ -48,13 +49,27 @@ public class TestMaxSonarI2CXL extends LinearOpMode {
         _sonarManager = new SonarArrayManager();
         _sonarManager.addSonar("left", _sonarLeft);
      //   _sonarManager.addSonar("right", _sonarRight);
+=======
+        //_sonarRight = hardwareMap.get(MaxSonarI2CXL.class, "sonar_right");
+
+        _sonarLeft.setI2cAddress(I2cAddr.create8bit(0x70));
+        //_sonarRight.setI2cAddress(I2cAddr.create8bit(0xDE));
+
+        _sonarManager = new SonarArrayManager();
+        _sonarManager.addSonar("left", _sonarLeft);
+        //_sonarManager.addSonar("right", _sonarRight);
+>>>>>>> deacb3cc27bcb2c64b2e77f42e27be4e317c7e87
 
 //        I2cDeviceSynch.ReadWindow readWindow = new I2cDeviceSynch.ReadWindow (1, 2, I2cDeviceSynch.ReadMode.REPEAT);
 //        _sonar.setReadWindow(readWindow);
 
         telemetry.addData("Status", "7");
         telemetry.addData("_sonarLeft.getConnectionInfo()", _sonarLeft.getConnectionInfo());
+<<<<<<< HEAD
        // telemetry.addData("_sonarRight.getConnectionInfo()", _sonarRight.getConnectionInfo());
+=======
+        //telemetry.addData("_sonarRight.getConnectionInfo()", _sonarRight.getConnectionInfo());
+>>>>>>> deacb3cc27bcb2c64b2e77f42e27be4e317c7e87
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
@@ -68,10 +83,17 @@ public class TestMaxSonarI2CXL extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
 
             double distanceLeft = _sonarManager.getDistance("left");
+<<<<<<< HEAD
         //    double distanceRight = _sonarManager.getDistance("right");
 
             telemetry.addData("Status", "Distance left: " + distanceLeft);
         //    telemetry.addData("Status", "Distance right: " + distanceRight);
+=======
+            //double distanceRight = _sonarManager.getDistance("right");
+
+            telemetry.addData("Status", "Distance left: " + distanceLeft);
+            //telemetry.addData("Status", "Distance right: " + distanceRight);
+>>>>>>> deacb3cc27bcb2c64b2e77f42e27be4e317c7e87
             telemetry.update();
         }
 

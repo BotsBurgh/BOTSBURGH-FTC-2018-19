@@ -8,13 +8,13 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 @TeleOp(name = "Arm Test", group = "Test")
 public class ArmTest extends LinearOpMode {
-    static final double THRESH = 5;
-    static final double STEP   = 0.05;
+    final static double ARMPOWER = 0.8;
+    final static double EXTENDPOWER = 0.2;
     DcMotor extend, arm;
-    double aPower = 1.0;
-    double ePower = 0.3;
     double c=0;
+    double adjusted, diff;
     Sensor pot, limit;
+    double resistance;
     @Override
     public void runOpMode() {
         limit = new Sensor(hardwareMap.get(DigitalChannel.class, "lim1"));
@@ -26,9 +26,15 @@ public class ArmTest extends LinearOpMode {
         extend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         arm = hardwareMap.get(DcMotor.class,"arm");
-        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        adjusted = pot.getPot();
+        diff = pot.getPot();
+
+        resistance = 0;
 
         telemetry.addData(">", "Press start");
         telemetry.update();
@@ -40,94 +46,40 @@ public class ArmTest extends LinearOpMode {
 
         // Start!
         while (opModeIsActive()) {
-            arm.setPower(aPower);
-            extend.setPower(ePower);
+            if (limit.isPressed()) {
+                diff = pot.getPot();
+                resistance = 0;
+            }
+            adjusted = pot.getPot() - diff;
 
             if (gamepad1.a) {
-                moveArm(arm, aPower);
+                if (adjusted < 70.0) {
+                    arm.setPower(ARMPOWER);
+                } else {
+                    arm.setPower(resistance);
+                }
             } else if (gamepad1.b) {
-                moveArm(arm, -aPower);
+                if (adjusted != 0.0) {
+                    arm.setPower(-ARMPOWER);
+                } else {
+                    arm.setPower(resistance);
+                }
             } else {
-                freezeArm();
+                arm.setPower(0);
             }
 
             if (gamepad1.x) {
-                moveExt(extend, ePower, 50);
+                //moveExt(extend, ePower, 50);
             } else if (gamepad1.y) {
-                moveExt(extend, ePower, -50);
+                //moveExt(extend, ePower, -50);
             } else {
                 extend.setPower(0);
             }
-        }
-        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
 
-    public void moveArm(DcMotor motor, double speed) {
-        double zero = pot.getPot();
-
-        // Ensure that the opmode is still active
-        if (opModeIsActive()) {
-
-            // Reset the encoder
-            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-            // reset the timeout time and start motion.
-            motor.setPower(speed);
-
-            // Loop while the arm is in range, the opmode is running, and the limit switch is not pressed.
-            while (opModeIsActive() && limit.isPressed() && (pot.getPot() < zero+50) && (pot.getPot() > zero)) {
-                // Display it for the driver.
-                telemetry.addData("Arm current", "Running at %7d", motor.getCurrentPosition());
-                telemetry.addData("Arm degree", pot.getPot());
-                telemetry.update();
-            }
-
-            // Stop all motion;
-            motor.setPower(0);
-        }
-    }
-
-    public void freezeArm() {
-        double zero = pot.getPot();
-        if ((pot.getPot()-zero)>THRESH) {
-            arm.setPower(c);
-            c+=STEP;
-        } else if ((pot.getPot()-zero)<THRESH) {
-            arm.setPower(-c);
-            c-=STEP;
-        } else {
-            c=0;
-        }
-    }
-
-    public void moveExt(DcMotor motor, double speed, int tic) {
-        int target;
-
-        // Ensure that the opmode is still active
-        if (opModeIsActive()) {
-
-            // Determine new target position, and pass to motor controller
-            target = motor.getCurrentPosition() + tic;
-            motor.setTargetPosition(target);
-
-            // Turn On RUN_TO_POSITION
-            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            // reset the timeout time and start motion.
-            motor.setPower(Math.abs(speed));
-
-            // keep looping while we are still active, there is time left, and both motors are running.
-            while (opModeIsActive() && (motor.isBusy())) {
-
-                // Display it for the driver.
-                telemetry.addData("Extend to",  "Running to %7d", target);
-                telemetry.addData("Extend current",  "Running at %7d", motor.getCurrentPosition());
-                telemetry.update();
-            }
-
-            // Stop all motion;
-            motor.setPower(0);
+            telemetry.addData("Reset", limit.isPressed());
+            telemetry.addData("Real", pot.getPot()); // Get the angle from the other file
+            telemetry.addData("Adjusted", adjusted);
+            telemetry.update();
         }
     }
 }
