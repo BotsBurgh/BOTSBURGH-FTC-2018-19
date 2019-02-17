@@ -29,7 +29,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Func;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -37,7 +39,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
+import java.util.List;
 import java.util.Locale;
 
 /*
@@ -103,7 +109,7 @@ public class Auto extends LinearOpMode {
     // These constants define the desired driving/control characteristics
     // The can/should be tweaked to suite the specific robot drive train.
     static final double DRIVE_SPEED = 0.7;     // Nominal speed for better accuracy.
-    static final double TURN_SPEED = 0.5;     // Nominal half speed for better accuracy.
+    static final double TURN_SPEED = 0.7;     // Nominal half speed for better accuracy.
 
     static final double HEADING_THRESHOLD = 5;      // As tight as we can make it with an integer gyro
     static final double P_TURN_COEFF = 0.1;     // Larger is more responsive, but also less stable
@@ -112,6 +118,14 @@ public class Auto extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+
+        initVuforia();
+
+        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
+            initTfod();
+        } else {
+            telemetry.addData("Sorry!", "This device is not compatible with TFOD");
+        }
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -176,7 +190,47 @@ public class Auto extends LinearOpMode {
         motorFL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorFR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-
+        if (opModeIsActive()) {
+            /** Activate Tensor Flow Object Detection. */
+            if (tfod != null) {
+                tfod.activate();
+            }
+        }
+        runtime.reset();
+        while (runtime.seconds()<2) {
+            if (tfod != null) {
+                // getUpdatedRecognitions() will return null if no new information is available since
+                // the last time that call was made.
+                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                if (updatedRecognitions != null) {
+                    telemetry.addData("# Object Detected", updatedRecognitions.size());
+                    if (updatedRecognitions.size() == 3) {
+                        int goldMineralX = -1;
+                        int silverMineral1X = -1;
+                        int silverMineral2X = -1;
+                        for (Recognition recognition : updatedRecognitions) {
+                            if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                                goldMineralX = (int) recognition.getLeft();
+                            } else if (silverMineral1X == -1) {
+                                silverMineral1X = (int) recognition.getLeft();
+                            } else {
+                                silverMineral2X = (int) recognition.getLeft();
+                            }
+                        }
+                        if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
+                            if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
+                                telemetry.addData("Gold Mineral Position", "Left");
+                            } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
+                                telemetry.addData("Gold Mineral Position", "Right");
+                            } else {
+                                telemetry.addData("Gold Mineral Position", "Center");
+                            }
+                        }
+                    }
+                    telemetry.update();
+                }
+            }
+        }
 
 
 
@@ -186,29 +240,31 @@ public class Auto extends LinearOpMode {
 
         telemetry.update();
         runtime.reset();
-
+        /*
         while(runtime.seconds() < .5) {
             elevator.setPower(1);
         } while(sensorColor.red()<sensorColor.blue() || sensorColor.red()< sensorColor.green()) {
             elevator.setPower(1);
-        }
+        }*/
 
         elevator.setPower(0);
-        gyroStrafe(DRIVE_SPEED,10,0.0);
+      //  gyroStrafe(DRIVE_SPEED,2,1);
 
 
         holder.setPosition(1);
-        sleep(500);
+        gyroTurn(TURN_SPEED,30);
 
-        gyroDrive(DRIVE_SPEED, 20.0, 0.0);
-        gyroStrafe(DRIVE_SPEED,-10,0.0);
 
-        gyroDrive(DRIVE_SPEED, -8,0.0);
+
+        //gyroDrive(DRIVE_SPEED, 20.0, 0.0);
+      //  gyroStrafe(DRIVE_SPEED,-2,1);
+
+      //  gyroDrive(DRIVE_SPEED, -8,0.0);
         gyroTurn(TURN_SPEED,90.0);
-        gyroDrive(DRIVE_SPEED,45.0,90);
+       // gyroDrive(DRIVE_SPEED,45.0,90);
         gyroTurn(TURN_SPEED,135);
         telemetry.update();
-        gyroDrive(DRIVE_SPEED,45,135);
+       // gyroDrive(DRIVE_SPEED,45,135);
 
         holder.setPosition(.5);
         sleep(100);
@@ -217,14 +273,15 @@ public class Auto extends LinearOpMode {
         holder.setPosition(1);
         sleep(100);
 
-        gyroDrive(DRIVE_SPEED, -72, 135);
+       // gyroDrive(DRIVE_SPEED, -72, 135);
 
         runtime.reset();
+        /*
         while(runtime.seconds()<.5) {
             elevator.setPower(-1);
         } while(sensorColor.red()<sensorColor.blue() || sensorColor.red() < sensorColor.green()) {
             elevator.setPower(-1);
-        }
+        }*/
 
 
 
@@ -306,14 +363,28 @@ public class Auto extends LinearOpMode {
      *                 0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
      *                 If a relative angle is required, add/subtract from current heading.
      */
-    public void gyroStrafe(double speed, double distance, double angle) {
+    public void gyroStrafe(double speed, double time, double direction) {
+        motorBL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorFL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorFR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        runtime.reset();
+        while(runtime.seconds() < time) {
+            motorFL.setPower(-speed);
+            motorFR.setPower(speed);
+            motorBL.setPower(speed);
+            motorBR.setPower(-speed);
+        }
+
         int moveCounts,newBackLeftTarget,newBackRightTarget,newFrontLeftTarget,newFrontRightTarget;
 
         double leftSpeed,rightSpeed, max;
 
         double error;
         double steer;
-        moveCounts = (int) (distance * COUNTS_PER_INCH);
+
+     /*   moveCounts = (int) (distance * COUNTS_PER_INCH);
         newBackLeftTarget = motorBL.getCurrentPosition()+moveCounts;
         newBackRightTarget = motorBR.getCurrentPosition()-moveCounts;
         newFrontLeftTarget = motorFL.getCurrentPosition()-moveCounts;
@@ -332,10 +403,15 @@ public class Auto extends LinearOpMode {
         motorBR.setPower(speed);
         motorFL.setPower(speed);
         motorFR.setPower(speed);
-
+        runtime.reset();
         while(opModeIsActive()&& (motorFL.isBusy() || motorFR.isBusy() || motorBL.isBusy() || motorBR.isBusy())) {
 
         }
+        motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        */
     }
     public void gyroDrive(double speed,
                           double distance,
@@ -445,9 +521,8 @@ public class Auto extends LinearOpMode {
      */
     public void gyroTurn(double speed, double angle) {
         telemetry.update();
-        runtime.reset();
         // keep looping while we are still active, and not on heading.
-        while (opModeIsActive() && !onHeading(speed, angle, P_TURN_COEFF) && runtime.seconds() < 3) {
+        while (opModeIsActive() && !onHeading(speed, angle, P_TURN_COEFF)) {
             // Update telemetry & Allow time for other processes to run.
             telemetry.update();
         }
@@ -563,5 +638,28 @@ public class Auto extends LinearOpMode {
 
     String formatDegrees(double degrees){
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
+    }
+
+    private void initTfod() {
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
+    }
+
+    private void initVuforia() {
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         */
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        // Loading trackables is not necessary for the Tensor Flow Object Detection engine.
     }
 }

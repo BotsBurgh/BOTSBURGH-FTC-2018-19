@@ -86,15 +86,15 @@ public class MecanumDrive extends LinearOpMode {
             } else if(rotation2 < -.5) {
                 rotation = -.5;
             }
-
+*/
 
             double flPower = y1 - x1-rotation;
             double frPower = y1 + x1+rotation;
             double blPower = y1 + x1-rotation;
             double brPower = y1 - x1+rotation;
 
-*/
-            double flPower,frPower,blPower,brPower;
+
+            /*
             if(y1>.5) {
                  flPower = .5;
                  frPower = .5;
@@ -111,7 +111,7 @@ public class MecanumDrive extends LinearOpMode {
                 blPower = 0;
                 brPower = 0;
             }
-
+*/
             movement.quadMove(flPower, frPower, blPower, brPower);
             telemetry.addData("Back Left", motorBL.getCurrentPosition());
             telemetry.addData("Back Right",motorBR.getCurrentPosition());
