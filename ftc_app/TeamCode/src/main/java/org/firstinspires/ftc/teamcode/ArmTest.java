@@ -9,7 +9,8 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 @TeleOp(name = "Arm Test", group = "Test")
 public class ArmTest extends LinearOpMode {
     final static double ARMPOWER = 0.8;
-    final static double EXTENDPOWER = 0.2;
+    final static double EXTENDPOWER = 0.6;
+    final static int    EXTENDTIC = 2000;
     DcMotor extend, arm;
     double c=0;
     double adjusted, diff;
@@ -69,9 +70,9 @@ public class ArmTest extends LinearOpMode {
             }
 
             if (gamepad1.x) {
-                moveExt(extend, EXTENDPOWER, 10);
+                moveExt(extend, EXTENDPOWER, EXTENDTIC);
             } else if (gamepad1.y) {
-                moveExt(extend, EXTENDPOWER, -10);
+                moveExt(extend, EXTENDPOWER, -EXTENDTIC);
             } else {
                 extend.setPower(0);
             }
@@ -82,6 +83,7 @@ public class ArmTest extends LinearOpMode {
             telemetry.update();
         }
     }
+
     public void moveExt(DcMotor motor, double speed, int tic) {
         int target;
 
