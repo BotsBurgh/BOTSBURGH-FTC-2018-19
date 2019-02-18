@@ -163,6 +163,10 @@ public class Auto extends LinearOpMode {
         gyro = hardwareMap.get(BNO055IMU.class, "gyro");
         motorFL.setDirection(DcMotor.Direction.REVERSE);
         motorBL.setDirection(DcMotor.Direction.REVERSE);
+        motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         elevator.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
@@ -198,6 +202,7 @@ public class Auto extends LinearOpMode {
         motorFL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorFR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+
         if (opModeIsActive()) {
             /** Activate Tensor Flow Object Detection. */
             if (tfod != null) {
@@ -206,6 +211,13 @@ public class Auto extends LinearOpMode {
         }
         runtime.reset();
         int position=0;
+        gyroTurn(TURN_SPEED,25);
+        gyroHold(TURN_SPEED,25,0.5);
+        gyroTurn(TURN_SPEED,-25);
+        gyroHold(TURN_SPEED,-25,.5);
+        gyroTurn(TURN_SPEED,0);
+        gyroDrive(DRIVE_SPEED,20.0,0);
+        /*
         while (runtime.seconds()<2) {
             if (tfod != null) {
                 // getUpdatedRecognitions() will return null if no new information is available since
@@ -277,7 +289,7 @@ public class Auto extends LinearOpMode {
             gyroDrive(DRIVE_SPEED,10,-25);
         } else {
             gyroDrive(DRIVE_SPEED,10,0);
-        }
+        } */
 
 
 
@@ -571,7 +583,8 @@ public class Auto extends LinearOpMode {
     public void gyroTurn(double speed, double angle) {
         telemetry.update();
         // keep looping while we are still active, and not on heading.
-        while (opModeIsActive() && !onHeading(speed, angle, P_TURN_COEFF)) {
+        runtime.reset();
+        while (opModeIsActive() && !onHeading(speed, angle, P_TURN_COEFF) && runtime.seconds()<2) {
             // Update telemetry & Allow time for other processes to run.
             telemetry.update();
         }

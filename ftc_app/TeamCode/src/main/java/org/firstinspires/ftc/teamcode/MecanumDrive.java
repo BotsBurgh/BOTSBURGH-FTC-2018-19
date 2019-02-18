@@ -95,11 +95,7 @@ public class MecanumDrive extends LinearOpMode {
             double y1 = gamepad1.left_stick_y;
             double rotation = gamepad1.right_stick_x;
 
-            // Uses gamepad 2 to make it constant speed
 
-            double x2 = gamepad2.left_stick_x;
-            double y2 = gamepad2.left_stick_y;
-            double rotation2 = gamepad2.right_stick_y;
             /*
             if(x2>.5) {
                 x1= .5;
