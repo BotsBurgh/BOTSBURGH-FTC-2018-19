@@ -117,7 +117,7 @@ public class Auto extends LinearOpMode {
     // These constants define the desired driving/control characteristics
     // The can/should be tweaked to suite the specific robot drive train.
     static final double DRIVE_SPEED = 0.7;     // Nominal speed for better accuracy.
-    static final double TURN_SPEED = 0.7;     // Nominal half speed for better accuracy.
+    static final double TURN_SPEED = 0.5;     // Nominal half speed for better accuracy.
 
     static final double HEADING_THRESHOLD = 5;      // As tight as we can make it with an integer gyro
     static final double P_TURN_COEFF = 0.1;     // Larger is more responsive, but also less stable
@@ -205,6 +205,7 @@ public class Auto extends LinearOpMode {
             }
         }
         runtime.reset();
+        int position=0;
         while (runtime.seconds()<2) {
             if (tfod != null) {
                 // getUpdatedRecognitions() will return null if no new information is available since
@@ -212,7 +213,7 @@ public class Auto extends LinearOpMode {
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                 if (updatedRecognitions != null) {
                     telemetry.addData("# Object Detected", updatedRecognitions.size());
-                    if (updatedRecognitions.size() == 3) {
+                    if (updatedRecognitions.size() == 2) {
                         int goldMineralX = -1;
                         int silverMineral1X = -1;
                         int silverMineral2X = -1;
@@ -225,19 +226,57 @@ public class Auto extends LinearOpMode {
                                 silverMineral2X = (int) recognition.getLeft();
                             }
                         }
+                        if(goldMineralX == -1) {
+                            telemetry.addData("Gold Mineral Position", "Right");
+                            position = 1;
+                        } else if((goldMineralX < silverMineral1X) || (goldMineralX < silverMineral2X)) {
+                            telemetry.addData("Gold Mineral Position", "Left");
+                            position = 2;
+                        } else {
+                            telemetry.addData("Gold Mineral Position","Center");
+                            position = 0;
+                        }
+
+                    }
+                    if(updatedRecognitions.size() == 3) {
+                        int goldMineralX = -1;
+                        int silverMineral1X = -1;
+                        int silverMineral2X = -1;
+                        for (Recognition recognition : updatedRecognitions) {
+                            if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                                goldMineralX = (int) recognition.getLeft();
+                            } else if (silverMineral1X == -1) {
+                                silverMineral1X = (int) recognition.getLeft();
+                            } else {
+                                silverMineral2X = (int) recognition.getLeft();
+                            }
+                        }
+
                         if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
-                            if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
+                            if ((goldMineralX < silverMineral1X) && goldMineralX < silverMineral2X) {
                                 telemetry.addData("Gold Mineral Position", "Left");
+                                position = 1;
                             } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
                                 telemetry.addData("Gold Mineral Position", "Right");
+                                position = 2;
                             } else {
                                 telemetry.addData("Gold Mineral Position", "Center");
+                                position = 0;
                             }
                         }
                     }
                     telemetry.update();
                 }
             }
+        }
+        if(position == 1) {
+            gyroTurn(TURN_SPEED,-25);
+            gyroDrive(DRIVE_SPEED,10,25);
+        } else if(position == 2) {
+            gyroTurn(TURN_SPEED,25);
+            gyroDrive(DRIVE_SPEED,10,-25);
+        } else {
+            gyroDrive(DRIVE_SPEED,10,0);
         }
 
 
@@ -258,7 +297,7 @@ public class Auto extends LinearOpMode {
         elevator.setPower(0);
       //  gyroStrafe(DRIVE_SPEED,2,1);
 
-
+        /*
         holder.setPosition(1);
         gyroTurn(TURN_SPEED,30);
 
@@ -283,13 +322,15 @@ public class Auto extends LinearOpMode {
 
        // gyroDrive(DRIVE_SPEED, -72, 135);
 
-        runtime.reset();
+        runtime.reset(); */
+
         /*
         while(runtime.seconds()<.5) {
             elevator.setPower(-1);
         } while(sensorColor.red()<sensorColor.blue() || sensorColor.red() < sensorColor.green()) {
             elevator.setPower(-1);
         }*/
+
 
 
 
@@ -371,14 +412,14 @@ public class Auto extends LinearOpMode {
      *                 0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
      *                 If a relative angle is required, add/subtract from current heading.
      */
-    public void gyroStrafe(double speed, double time, double direction) {
+    public void gyroStrafe(double speed, double distance, double angle) {
         motorBL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorFL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorFR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         runtime.reset();
-        while(runtime.seconds() < time) {
+        while(runtime.seconds() < distance) {
             motorFL.setPower(-speed);
             motorFR.setPower(speed);
             motorBL.setPower(speed);
