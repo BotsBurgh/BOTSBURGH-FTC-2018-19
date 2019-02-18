@@ -69,9 +69,9 @@ public class ArmTest extends LinearOpMode {
             }
 
             if (gamepad1.x) {
-                //moveExt(extend, ePower, 50);
+                moveExt(extend, EXTENDPOWER, 10);
             } else if (gamepad1.y) {
-                //moveExt(extend, ePower, -50);
+                moveExt(extend, EXTENDPOWER, -10);
             } else {
                 extend.setPower(0);
             }
@@ -80,6 +80,29 @@ public class ArmTest extends LinearOpMode {
             telemetry.addData("Real", pot.getPot()); // Get the angle from the other file
             telemetry.addData("Adjusted", adjusted);
             telemetry.update();
+        }
+    }
+    public void moveExt(DcMotor motor, double speed, int tic) {
+        int target;
+
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+            // Determine new target position, and pass to motor controller
+            target = motor.getCurrentPosition() + tic;
+            motor.setTargetPosition(target);
+
+            // reset the timeout time and start motion.
+            motor.setPower(Math.abs(speed));
+
+            // keep looping while we are still active, there is time left, and both motors are running.
+            while (opModeIsActive() && (motor.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Extend to", "Running to %7d", target);
+                telemetry.addData("Extend current", "Running at %7d", motor.getCurrentPosition());
+                telemetry.update();
+            }
         }
     }
 }
