@@ -61,7 +61,7 @@ public class ArmTest extends LinearOpMode {
                 }
             } else if (gamepad1.b) {
                 if (adjusted != 0.0) {
-                    arm.setPower(-ARMPOWER);
+                    arm.setPower(ARMPOWER);
                 } else {
                     arm.setPower(resistance);
                 }

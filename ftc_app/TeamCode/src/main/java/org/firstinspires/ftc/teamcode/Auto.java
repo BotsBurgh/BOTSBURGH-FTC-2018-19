@@ -120,8 +120,8 @@ public class Auto extends LinearOpMode {
     static final double TURN_SPEED = 0.5;     // Nominal half speed for better accuracy.
 
     static final double HEADING_THRESHOLD = 5;      // As tight as we can make it with an integer gyro
-    static final double P_TURN_COEFF = 0.1;     // Larger is more responsive, but also less stable
-    static final double P_DRIVE_COEFF = 0.15;     // Larger is more responsive, but also less stable
+    static final double P_TURN_COEFF = 0.2;     // Larger is more responsive, but also less stable
+    static final double P_DRIVE_COEFF = 0.3;     // Larger is more responsive, but also less stable
 
 
     @Override
@@ -196,7 +196,7 @@ public class Auto extends LinearOpMode {
         telemetry.update();
         runtime.reset();
         waitForStart();
-        gyro.startAccelerationIntegration(new Position(), new Velocity(), 1000);
+        gyro.startAccelerationIntegration(new Position(), new Velocity(), 250);
         motorBL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorFL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -211,13 +211,19 @@ public class Auto extends LinearOpMode {
         }
         runtime.reset();
         int position=0;
-        gyroTurn(TURN_SPEED,25);
-        gyroHold(TURN_SPEED,25,0.5);
-        gyroTurn(TURN_SPEED,-25);
-        gyroHold(TURN_SPEED,-25,.5);
-        gyroTurn(TURN_SPEED,0);
-        gyroDrive(DRIVE_SPEED,20.0,0);
-        /*
+        while(runtime.seconds() < .5) {
+            elevator.setPower(1);
+        }
+        runtime.reset();
+        while((sensorColor.red()<sensorColor.blue() || sensorColor.red()< sensorColor.green()) && runtime.seconds()<3) {
+            elevator.setPower(1);
+        }
+        gyroStrafe(DRIVE_SPEED,8,0,.5);
+        gyroDrive(DRIVE_SPEED,4,0,.5);
+        gyroStrafe(DRIVE_SPEED,-8,0,.5);
+
+
+
         while (runtime.seconds()<2) {
             if (tfod != null) {
                 // getUpdatedRecognitions() will return null if no new information is available since
@@ -281,15 +287,29 @@ public class Auto extends LinearOpMode {
                 }
             }
         }
+
+        double angle;
         if(position == 1) {
-            gyroTurn(TURN_SPEED,-25);
-            gyroDrive(DRIVE_SPEED,10,25);
+            angle = -25;
+            gyroTurn(TURN_SPEED,-45,1);
+            gyroDrive(DRIVE_SPEED,27,angle,1.5);
         } else if(position == 2) {
-            gyroTurn(TURN_SPEED,25);
-            gyroDrive(DRIVE_SPEED,10,-25);
+            angle = 25;
+            gyroTurn(TURN_SPEED,45,1);
+            gyroDrive(DRIVE_SPEED,27,angle,1.5);
         } else {
-            gyroDrive(DRIVE_SPEED,10,0);
-        } */
+            angle = 0;
+            gyroDrive(DRIVE_SPEED,20,angle,1.5);
+        }
+
+        gyroDrive(DRIVE_SPEED,-10,angle,1);
+        gyroTurn(TURN_SPEED,90,2);
+        gyroDrive(DRIVE_SPEED,32,90,2);
+
+        gyroTurn(TURN_SPEED,135,1.5);
+        gyroStrafe(DRIVE_SPEED,-20,135,1.5);
+        gyroDrive(DRIVE_SPEED,50,135,3);
+        gyroDrive(DRIVE_SPEED,-90,135,7);
 
 
 
@@ -424,7 +444,8 @@ public class Auto extends LinearOpMode {
      *                 0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
      *                 If a relative angle is required, add/subtract from current heading.
      */
-    public void gyroStrafe(double speed, double distance, double angle) {
+    public void gyroStrafe(double speed, double distance, double angle,double time) {
+        /*
         motorBL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorFL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -437,6 +458,7 @@ public class Auto extends LinearOpMode {
             motorBL.setPower(speed);
             motorBR.setPower(-speed);
         }
+        */
 
         int moveCounts,newBackLeftTarget,newBackRightTarget,newFrontLeftTarget,newFrontRightTarget;
 
@@ -445,7 +467,7 @@ public class Auto extends LinearOpMode {
         double error;
         double steer;
 
-     /*   moveCounts = (int) (distance * COUNTS_PER_INCH);
+        moveCounts = (int) (distance * COUNTS_PER_INCH);
         newBackLeftTarget = motorBL.getCurrentPosition()+moveCounts;
         newBackRightTarget = motorBR.getCurrentPosition()-moveCounts;
         newFrontLeftTarget = motorFL.getCurrentPosition()-moveCounts;
@@ -465,18 +487,22 @@ public class Auto extends LinearOpMode {
         motorFL.setPower(speed);
         motorFR.setPower(speed);
         runtime.reset();
-        while(opModeIsActive()&& (motorFL.isBusy() || motorFR.isBusy() || motorBL.isBusy() || motorBR.isBusy())) {
+        while(opModeIsActive()&& (motorFL.isBusy() || motorFR.isBusy() || motorBL.isBusy() || motorBR.isBusy()) && runtime.seconds()<time) {
 
         }
+        motorBL.setPower(0);
+        motorBR.setPower(0);
+        motorFL.setPower(0);
+        motorFR.setPower(0);
         motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        */
+
     }
     public void gyroDrive(double speed,
                           double distance,
-                          double angle) {
+                          double angle, double time) {
 
         int newFrontLeftTarget;
         int newFrontRightTarget;
@@ -519,8 +545,9 @@ public class Auto extends LinearOpMode {
             motorFR.setPower(speed);
 
             // keep looping while we are still active, and BOTH motors are running.
+            runtime.reset();
             while (opModeIsActive() &&
-                    (motorBL.isBusy() || motorBR.isBusy() ||  motorFL.isBusy() || motorFR.isBusy())) {
+                    (motorBL.isBusy() || motorBR.isBusy() ||  motorFL.isBusy() || motorFR.isBusy())&& runtime.seconds()< time) {
 
                 // adjust relative speed based on heading error.
                 error = getError(angle);
@@ -580,11 +607,11 @@ public class Auto extends LinearOpMode {
      *              0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
      *              If a relative angle is required, add/subtract from current heading.
      */
-    public void gyroTurn(double speed, double angle) {
+    public void gyroTurn(double speed, double angle,double time) {
         telemetry.update();
         // keep looping while we are still active, and not on heading.
         runtime.reset();
-        while (opModeIsActive() && !onHeading(speed, angle, P_TURN_COEFF) && runtime.seconds()<2) {
+        while (opModeIsActive() && !onHeading(speed, angle, P_TURN_COEFF) && runtime.seconds()<time) {
             // Update telemetry & Allow time for other processes to run.
             telemetry.update();
         }
