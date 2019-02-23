@@ -18,7 +18,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -27,7 +27,6 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Func;
@@ -83,11 +82,10 @@ RF is Red Far    (Far from the red team's crater)
 */
 
 
-
 // Tests
 // TODO: JavaDoc
-@Autonomous(name="Gyro Test")
-public class Auto extends LinearOpMode {
+@Autonomous(name="Auto Short")
+public class AutoShort extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
     private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
@@ -119,7 +117,7 @@ public class Auto extends LinearOpMode {
     static final double DRIVE_SPEED = 0.7;     // Nominal speed for better accuracy.
     static final double TURN_SPEED = 0.7;     // Nominal half speed for better accuracy.
 
-    static final double HEADING_THRESHOLD = 1;      // As tight as we can make it with an integer gyro
+    static final double HEADING_THRESHOLD = 5;      // As tight as we can make it with an integer gyro
     static final double P_TURN_COEFF = 0.15;     // Larger is more responsive, but also less stable
     static final double P_DRIVE_COEFF = 0.15;     // Larger is more responsive, but also less stable
 
@@ -211,7 +209,7 @@ public class Auto extends LinearOpMode {
         }
         runtime.reset();
         int position=0;
-        while (runtime.seconds()<2) {
+        while (runtime.seconds()<3) {
             if (tfod != null) {
                 // getUpdatedRecognitions() will return null if no new information is available since
                 // the last time that call was made.
@@ -243,7 +241,6 @@ public class Auto extends LinearOpMode {
                         }
 
                     }
-
                     if(updatedRecognitions.size() == 3) {
                         int goldMineralX = -1;
                         int silverMineral1X = -1;
@@ -261,10 +258,10 @@ public class Auto extends LinearOpMode {
                         if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
                             if ((goldMineralX < silverMineral1X) && goldMineralX < silverMineral2X) {
                                 telemetry.addData("Gold Mineral Position", "Left");
-                                position = 2;
+                                position = 1;
                             } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
                                 telemetry.addData("Gold Mineral Position", "Right");
-                                position = 1;
+                                position = 2;
                             } else {
                                 telemetry.addData("Gold Mineral Position", "Center");
                                 position = 0;
@@ -281,7 +278,6 @@ public class Auto extends LinearOpMode {
         }
         runtime.reset();
         while((sensorColor.red()<sensorColor.blue() || sensorColor.red()< sensorColor.green())) {
-
             elevator.setPower(1);
         }
         elevator.setPower(0);
@@ -293,32 +289,31 @@ public class Auto extends LinearOpMode {
 
         double angle;
         if(position == 1) {
-            angle = -45;
-            gyroTurn(TURN_SPEED,angle,2);
-            gyroDrive(DRIVE_SPEED,30,angle,2);
-            gyroDrive(DRIVE_SPEED,-8,angle,2);
+            angle = -35;
+            gyroTurn(TURN_SPEED,angle,1);
+            gyroDrive(DRIVE_SPEED,25,angle,2);
+            gyroDrive(DRIVE_SPEED,-10,angle,2);
         } else if(position == 2) {
-            angle = 45;
-            gyroTurn(TURN_SPEED,angle,2);
+            angle = 35;
+            gyroTurn(TURN_SPEED,angle,1);
             gyroDrive(DRIVE_SPEED,30,angle,2);
-            gyroDrive(DRIVE_SPEED,-8,angle,1);
+            gyroDrive(DRIVE_SPEED,-10,angle,1);
         } else {
             angle = 0;
             gyroTurn(TURN_SPEED,angle,2);
             gyroDrive(DRIVE_SPEED,25,angle,2);
-            gyroDrive(DRIVE_SPEED,-8,angle,2);
+            gyroDrive(DRIVE_SPEED,-10,angle,2);
         }
-        gyroTurn(TURN_SPEED,270,4);
-        if(position == 1) {
-            gyroDrive(DRIVE_SPEED,-50,90,3.5);
-        } else if(position == 2) {
-            gyroDrive(DRIVE_SPEED,-25,90,2);
-        } else {
-            gyroDrive(DRIVE_SPEED,-32,90,3);
-        }
+        gyroStrafe(TURN_SPEED,50,4,3);
 
-        gyroTurn(TURN_SPEED,135,2);
-        gyroStrafe(DRIVE_SPEED,-35,135,1);
+        if(position == 1) {
+            gyroStrafe(DRIVE_SPEED,50,90,3.5);
+        } else if(position == 2) {
+            gyroStrafe(DRIVE_SPEED,25,90,2);
+        } else {
+            gyroStrafe(DRIVE_SPEED,32,90,3);
+        }
+        gyroTurn(TURN_SPEED,-45,3);
         gyroDrive(DRIVE_SPEED,50,135,3);
         gyroDrive(DRIVE_SPEED,-45,135,2.7);
         gyroDrive(DRIVE_SPEED,-45,135,2.7);
@@ -452,7 +447,7 @@ public class Auto extends LinearOpMode {
      * 1) Move gets to the desired position
      * 2) Driver stops the opmode running.
      *
-     * @param speed    Target speed for forward motion.  Should allow for +/- variance for adjusting heading
+     * @param speed    Target speed for forward motion.  Should allow for _/- variance for adjusting heading
      * @param distance Distance (in inches) to move from current position.  Negative distance means move backwards.
      * @param angle    Absolute Angle (in Degrees) relative to last gyro reset.
      *                 0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
