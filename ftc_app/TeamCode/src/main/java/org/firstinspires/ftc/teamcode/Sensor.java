@@ -38,8 +38,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 public class Sensor {
     // Potentiometer configuration
     public static int POT_MAX = 270; // Max range in degrees
-    public static double Vmin = 0.004; // Minimum voltage
-    public static double Vmax = 3.304; // Maximum voltage
+    public static double Vmax = 0.004; // Minimum voltage
+    public static double Vmin = 3.304; // Maximum voltage
 
     // VuForia configuration
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";

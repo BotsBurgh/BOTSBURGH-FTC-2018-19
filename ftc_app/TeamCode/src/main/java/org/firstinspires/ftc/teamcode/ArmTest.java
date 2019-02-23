@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 @TeleOp(name = "Arm Test", group = "Test")
 public class ArmTest extends LinearOpMode {
-    final static double ARMPOWER = 0.8;
+    final static double ARMPOWER = 0.4;
     final static double EXTENDPOWER = 0.6;
     final static int    EXTENDTIC = 2000;
     DcMotor extend, arm;
@@ -44,7 +44,7 @@ public class ArmTest extends LinearOpMode {
 
         telemetry.addData(">", "Press stop");
         telemetry.update();
-
+        int ext = 0;
         // Start!
         while (opModeIsActive()) {
             if (limit.isPressed()) {
@@ -53,26 +53,38 @@ public class ArmTest extends LinearOpMode {
             }
             adjusted = pot.getPot() - diff;
 
-            if (gamepad1.a) {
-                if (adjusted < 70.0) {
-                    arm.setPower(ARMPOWER);
+
+            if (gamepad1.left_stick_y>0) {
+                if (adjusted < 90.0) {
+                    arm.setPower(-gamepad1.right_stick_y);
                 } else {
                     arm.setPower(resistance);
                 }
-            } else if (gamepad1.b) {
-                if (adjusted != 0.0) {
-                    arm.setPower(ARMPOWER);
+            } else if (gamepad1.left_stick_y<0) {
+                if (adjusted > 0.0) {
+                    arm.setPower(gamepad1.right_stick_y);
                 } else {
                     arm.setPower(resistance);
                 }
             } else {
-                arm.setPower(0);
+                if(ext > 0) {
+                    if(adjusted < 45) {
+                        resistance = -.2;
+                        arm.setPower(resistance);
+                    }
+                    if(adjusted > 45) {
+                        resistance = .2;
+                        arm.setPower(resistance);
+                    }
+                }
             }
 
             if (gamepad1.x) {
                 moveExt(extend, EXTENDPOWER, EXTENDTIC);
+                ext -= 1;
             } else if (gamepad1.y) {
                 moveExt(extend, EXTENDPOWER, -EXTENDTIC);
+                ext += 1;
             } else {
                 extend.setPower(0);
             }
