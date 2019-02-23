@@ -73,9 +73,9 @@ public class ArmTest extends LinearOpMode {
                 current = adjusted;
             // Resist movement
             } else {
-                if (adjusted - current > FREEZE_THRESH) {
+                if (adjusted - current < FREEZE_THRESH) {
                     resistance += FREEZE_STEP;
-                } else if (adjusted - current < FREEZE_THRESH) {
+                } else if (adjusted - current > FREEZE_THRESH) {
                     resistance -= FREEZE_STEP;
                 } else {
                     resistance = 0;
