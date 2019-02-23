@@ -117,10 +117,10 @@ public class Auto extends LinearOpMode {
     // These constants define the desired driving/control characteristics
     // The can/should be tweaked to suite the specific robot drive train.
     static final double DRIVE_SPEED = 0.7;     // Nominal speed for better accuracy.
-    static final double TURN_SPEED = 0.5;     // Nominal half speed for better accuracy.
+    static final double TURN_SPEED = 0.7;     // Nominal half speed for better accuracy.
 
     static final double HEADING_THRESHOLD = 5;      // As tight as we can make it with an integer gyro
-    static final double P_TURN_COEFF = 0.1;     // Larger is more responsive, but also less stable
+    static final double P_TURN_COEFF = 0.15;     // Larger is more responsive, but also less stable
     static final double P_DRIVE_COEFF = 0.15;     // Larger is more responsive, but also less stable
 
 
@@ -211,7 +211,7 @@ public class Auto extends LinearOpMode {
         }
         runtime.reset();
         int position=0;
-        while (runtime.seconds()<1.5) {
+        while (runtime.seconds()<3) {
             if (tfod != null) {
                 // getUpdatedRecognitions() will return null if no new information is available since
                 // the last time that call was made.
@@ -279,31 +279,34 @@ public class Auto extends LinearOpMode {
             elevator.setPower(1);
         }
         runtime.reset();
-        while((sensorColor.red()<sensorColor.blue() || sensorColor.red()< sensorColor.green()) && runtime.seconds()<3) {
+        while((sensorColor.red()<sensorColor.blue() || sensorColor.red()< sensorColor.green())) {
             elevator.setPower(1);
         }
+        elevator.setPower(0);
         sleep(500);
-        gyroTurn(TURN_SPEED,-45,1);
+        gyroStrafe(DRIVE_SPEED,3,0,.5);
+        gyroTurn(TURN_SPEED,-45,1.5);
         gyroDrive(DRIVE_SPEED,4,-45,.5);
+
 
         double angle;
         if(position == 1) {
             angle = -35;
             gyroTurn(TURN_SPEED,angle,1);
-            gyroDrive(DRIVE_SPEED,35,angle,2);
-            gyroDrive(DRIVE_SPEED,-20,angle,1);
+            gyroDrive(DRIVE_SPEED,30,angle,2);
+            gyroDrive(DRIVE_SPEED,-10,angle,1);
         } else if(position == 2) {
             angle = 35;
             gyroTurn(TURN_SPEED,angle,1);
-            gyroDrive(DRIVE_SPEED,35,angle,2);
-            gyroDrive(DRIVE_SPEED,-20,angle,1);
+            gyroDrive(DRIVE_SPEED,30,angle,2);
+            gyroDrive(DRIVE_SPEED,-10,angle,1);
         } else {
             angle = 0;
             gyroTurn(TURN_SPEED,angle,2);
-            gyroDrive(DRIVE_SPEED,25,angle,1);
+            gyroDrive(DRIVE_SPEED,30,angle,1);
             gyroDrive(DRIVE_SPEED,-10,angle,1);
         }
-        gyroTurn(TURN_SPEED,90,3);
+        gyroTurn(TURN_SPEED,90,4);
         if(position == 1) {
             gyroDrive(DRIVE_SPEED,50,90,3.5);
         } else if(position == 2) {
@@ -312,11 +315,11 @@ public class Auto extends LinearOpMode {
             gyroDrive(DRIVE_SPEED,32,90,3);
         }
 
-        gyroTurn(TURN_SPEED,135,1.5);
-        gyroStrafe(DRIVE_SPEED,-20,135,2);
+        gyroTurn(TURN_SPEED,135,2);
+        gyroStrafe(DRIVE_SPEED,-35,135,1);
         gyroDrive(DRIVE_SPEED,50,135,3);
-        gyroDrive(DRIVE_SPEED,-45,135,3);
-        gyroDrive(DRIVE_SPEED,-45,135,3);
+        gyroDrive(DRIVE_SPEED,-45,135,2.7);
+        gyroDrive(DRIVE_SPEED,-45,135,2.7);
 
 
 
@@ -326,6 +329,7 @@ public class Auto extends LinearOpMode {
 
         telemetry.update();
         runtime.reset();
+
         /*
         while(runtime.seconds() < .5) {
             elevator.setPower(1);
@@ -334,6 +338,7 @@ public class Auto extends LinearOpMode {
         }*/
 
         elevator.setPower(0);
+
       //  gyroStrafe(DRIVE_SPEED,2,1);
 
         /*
@@ -557,6 +562,7 @@ public class Auto extends LinearOpMode {
                     (motorBL.isBusy() || motorBR.isBusy() ||  motorFL.isBusy() || motorFR.isBusy())&& runtime.seconds()< time) {
 
                 // adjust relative speed based on heading error.
+                /*
                 error = getError(angle);
                 steer = getSteer(error, P_DRIVE_COEFF);
 
@@ -578,10 +584,11 @@ public class Auto extends LinearOpMode {
                 motorBL.setPower(leftSpeed);
                 motorFR.setPower(rightSpeed);
                 motorBR.setPower(rightSpeed);
+                */
 
 
                 // Display drive status for the driver.
-                telemetry.addData("Err/St", "%5.1f/%5.1f", error, steer);
+
                 telemetry.addData("Target", "%7d:%7d", newBackLeftTarget,newBackRightTarget);
                 telemetry.addData("Actual", "%7d:%7d", motorBL.getCurrentPosition(),
                         motorBR.getCurrentPosition());

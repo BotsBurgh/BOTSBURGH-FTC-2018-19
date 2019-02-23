@@ -113,7 +113,7 @@ public class FourWheelDrive extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
-        driveForward(15,.7);
+        driveForward(50,.7);
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
