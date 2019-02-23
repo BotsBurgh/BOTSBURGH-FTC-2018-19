@@ -120,8 +120,8 @@ public class Auto extends LinearOpMode {
     static final double TURN_SPEED = 0.5;     // Nominal half speed for better accuracy.
 
     static final double HEADING_THRESHOLD = 5;      // As tight as we can make it with an integer gyro
-    static final double P_TURN_COEFF = 0.2;     // Larger is more responsive, but also less stable
-    static final double P_DRIVE_COEFF = 0.3;     // Larger is more responsive, but also less stable
+    static final double P_TURN_COEFF = 0.1;     // Larger is more responsive, but also less stable
+    static final double P_DRIVE_COEFF = 0.15;     // Larger is more responsive, but also less stable
 
 
     @Override
@@ -211,20 +211,7 @@ public class Auto extends LinearOpMode {
         }
         runtime.reset();
         int position=0;
-        while(runtime.seconds() < .5) {
-            elevator.setPower(1);
-        }
-        runtime.reset();
-        while((sensorColor.red()<sensorColor.blue() || sensorColor.red()< sensorColor.green()) && runtime.seconds()<3) {
-            elevator.setPower(1);
-        }
-        gyroStrafe(DRIVE_SPEED,8,0,.5);
-        gyroDrive(DRIVE_SPEED,4,0,.5);
-        gyroStrafe(DRIVE_SPEED,-8,0,.5);
-
-
-
-        while (runtime.seconds()<2) {
+        while (runtime.seconds()<1.5) {
             if (tfod != null) {
                 // getUpdatedRecognitions() will return null if no new information is available since
                 // the last time that call was made.
@@ -287,29 +274,49 @@ public class Auto extends LinearOpMode {
                 }
             }
         }
+        runtime.reset();
+        while(runtime.seconds() < .5) {
+            elevator.setPower(1);
+        }
+        runtime.reset();
+        while((sensorColor.red()<sensorColor.blue() || sensorColor.red()< sensorColor.green()) && runtime.seconds()<3) {
+            elevator.setPower(1);
+        }
+        sleep(500);
+        gyroTurn(TURN_SPEED,-45,1);
+        gyroDrive(DRIVE_SPEED,4,-45,.5);
 
         double angle;
         if(position == 1) {
-            angle = -25;
-            gyroTurn(TURN_SPEED,-45,1);
-            gyroDrive(DRIVE_SPEED,27,angle,1.5);
+            angle = -35;
+            gyroTurn(TURN_SPEED,angle,1);
+            gyroDrive(DRIVE_SPEED,35,angle,2);
+            gyroDrive(DRIVE_SPEED,-20,angle,1);
         } else if(position == 2) {
-            angle = 25;
-            gyroTurn(TURN_SPEED,45,1);
-            gyroDrive(DRIVE_SPEED,27,angle,1.5);
+            angle = 35;
+            gyroTurn(TURN_SPEED,angle,1);
+            gyroDrive(DRIVE_SPEED,35,angle,2);
+            gyroDrive(DRIVE_SPEED,-20,angle,1);
         } else {
             angle = 0;
-            gyroDrive(DRIVE_SPEED,20,angle,1.5);
+            gyroTurn(TURN_SPEED,angle,2);
+            gyroDrive(DRIVE_SPEED,25,angle,1);
+            gyroDrive(DRIVE_SPEED,-10,angle,1);
+        }
+        gyroTurn(TURN_SPEED,90,3);
+        if(position == 1) {
+            gyroDrive(DRIVE_SPEED,50,90,3.5);
+        } else if(position == 2) {
+            gyroDrive(DRIVE_SPEED,25,90,2);
+        } else {
+            gyroDrive(DRIVE_SPEED,32,90,3);
         }
 
-        gyroDrive(DRIVE_SPEED,-10,angle,1);
-        gyroTurn(TURN_SPEED,90,2);
-        gyroDrive(DRIVE_SPEED,32,90,2);
-
         gyroTurn(TURN_SPEED,135,1.5);
-        gyroStrafe(DRIVE_SPEED,-20,135,1.5);
+        gyroStrafe(DRIVE_SPEED,-20,135,2);
         gyroDrive(DRIVE_SPEED,50,135,3);
-        gyroDrive(DRIVE_SPEED,-90,135,7);
+        gyroDrive(DRIVE_SPEED,-45,135,3);
+        gyroDrive(DRIVE_SPEED,-45,135,3);
 
 
 

@@ -54,13 +54,13 @@ public class ArmTest extends LinearOpMode {
             adjusted = pot.getPot() - diff;
 
 
-            if (gamepad1.left_stick_y>0) {
+            if (gamepad1.a) {
                 if (adjusted < 90.0) {
                     arm.setPower(-gamepad1.right_stick_y);
                 } else {
                     arm.setPower(resistance);
                 }
-            } else if (gamepad1.left_stick_y<0) {
+            } else if (gamepad1.b) {
                 if (adjusted > 0.0) {
                     arm.setPower(gamepad1.right_stick_y);
                 } else {

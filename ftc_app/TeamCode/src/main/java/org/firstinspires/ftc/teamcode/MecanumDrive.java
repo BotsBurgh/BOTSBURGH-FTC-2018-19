@@ -190,10 +190,10 @@ public class MecanumDrive extends LinearOpMode {
                 power = gamepad2.left_stick_y;
             }
             // Let User manually change direction
-            if(gamepad2.a) {
+            if(gamepad2.dpad_up) {
                 direction = UP;
             }
-            if(gamepad2.b) {direction = DOWN;}
+            if(gamepad2.dpad_down) {direction = DOWN;}
             motor.setPower(power);
             if (limit.isPressed()) {
                 diff = pot.getPot();
@@ -201,38 +201,65 @@ public class MecanumDrive extends LinearOpMode {
             }
             adjusted = pot.getPot() - diff;
 
-
-            if (gamepad2.left_stick_y>0) {
-                if (adjusted < 90.0) {
-                    arm.setPower(gamepad1.right_stick_y);
+            resistance = 0;
+            if (gamepad2.right_stick_y<0) {
+                if (adjusted < 90) {
+                    arm.setPower(.3*gamepad2.right_stick_y-.1*ext);
                 } else {
                     arm.setPower(resistance);
                 }
-            } else if (gamepad2.left_stick_y<0) {
-                if (adjusted > 0.0) {
-                    arm.setPower(gamepad2.right_stick_y);
+            } else if (gamepad2.right_stick_y>0) {
+                if (adjusted > 0) {
+                    arm.setPower(.3*gamepad2.right_stick_y-.1*ext);
                 } else {
                     arm.setPower(resistance);
                 }
             } else {
-                if(ext > 0) {
                     if(adjusted < 45) {
-                        resistance = -.2;
+                        resistance = 0;
                         arm.setPower(resistance);
                     }
-                    if(adjusted > 45) {
+                    else if(adjusted < 60 ) {
+                        resistance = 0;
+                        arm.setPower(resistance);
+                    }
+                    else if(adjusted > 90) {
                         resistance = .2;
                         arm.setPower(resistance);
                     }
-                }
-            }
 
-            if (gamepad2.right_stick_y<0) {
-                moveExt(extend, EXTENDPOWER, EXTENDTIC);
-                ext -= 1;
-            } else if (gamepad2.right_stick_y>0) {
-                moveExt(extend, EXTENDPOWER, -EXTENDTIC);
-                ext += 1;
+                }
+
+
+            if (gamepad2.y) {
+                if(ext>0) {
+                    ext -=1;
+                    if(ext == 1) {
+                        while (adjusted < 45) {
+                            adjusted = pot.getPot() - diff;
+
+                            arm.setPower(-.3 - .2 * ext);
+                        }
+                    }
+
+                    arm.setPower(0);
+                    moveExt(extend, EXTENDPOWER, EXTENDTIC);
+
+
+
+                }
+            } else if (gamepad2.x) {
+                if(ext < 4) {
+                    ext += 1;
+                    if(ext == 1)
+                    while(adjusted < 45) {
+                        adjusted = pot.getPot() - diff;
+                        arm.setPower(-.3-.2*ext);
+                    }
+                    arm.setPower(0);
+                    moveExt(extend, EXTENDPOWER, -EXTENDTIC);
+
+                }
             } else {
                 extend.setPower(0);
             }
@@ -240,7 +267,7 @@ public class MecanumDrive extends LinearOpMode {
             telemetry.addData("Reset", limit.isPressed());
             telemetry.addData("Real", pot.getPot()); // Get the angle from the other file
             telemetry.addData("Adjusted", adjusted);
-            telemetry.update();
+
             movement.quadMove(flPower, frPower, blPower, brPower);
             telemetry.addData("Back Left", motorBL.getCurrentPosition());
             telemetry.addData("Back Right",motorBR.getCurrentPosition());
