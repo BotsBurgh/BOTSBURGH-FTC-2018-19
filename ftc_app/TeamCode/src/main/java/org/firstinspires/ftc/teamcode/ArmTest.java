@@ -90,14 +90,14 @@ public class ArmTest extends LinearOpMode {
                 */
                 //arm.setPower(ARM_POWER/1.5);
                 //current = adjusted;
-                moveArm(arm, ARM_POWER, 2000);
+                moveExt(arm, ARM_POWER, 2000);
             // If 'b' is pressed, and the adjusted potentiometer is more than ARM_MIN
             } else if ((gamepad1.b) && (adjusted > ARM_MIN)) {
                 telemetry.addData("Moving arm", "up");
                 //telemetry.update();
                 //arm.setPower(-ARM_POWER);
                 //current = adjusted;
-                moveArm(arm, ARM_POWER, -2000);
+                moveExt(arm, ARM_POWER, -2000);
             // Resist movement
             } else {
                 if (((adjusted - current) < 0) && (Math.abs(adjusted-current) > FREEZE_THRESH)) {
@@ -131,30 +131,6 @@ public class ArmTest extends LinearOpMode {
     }
 
     public void moveExt(DcMotor motor, double speed, int tic) {
-        int target;
-
-        // Ensure that the opmode is still active
-        if (opModeIsActive()) {
-
-            // Determine new target position, and pass to motor controller
-            target = motor.getCurrentPosition() + tic;
-            motor.setTargetPosition(target);
-
-            // reset the timeout time and start motion.
-            motor.setPower(Math.abs(speed));
-
-            // keep looping while we are still active, there is time left, and both motors are running.
-            while (opModeIsActive() && (motor.isBusy())) {
-                // Display it for the driver.
-                telemetry.addData("Extend to", "Running to %7d", target);
-                telemetry.addData("Extend current", "Running at %7d", motor.getCurrentPosition());
-                telemetry.update();
-            }
-            motor.setPower(0);
-        }
-    }
-
-    public void moveArm(DcMotor motor, double speed, int tic) {
         int target;
 
         // Ensure that the opmode is still active
