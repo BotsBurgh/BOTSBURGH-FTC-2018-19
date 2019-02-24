@@ -195,7 +195,9 @@ public class Auto extends LinearOpMode {
         composeTelemetry();
         telemetry.update();
         runtime.reset();
+        // holder.setPosition(INITIAL_POSITION);
         waitForStart();
+
         gyro.startAccelerationIntegration(new Position(), new Velocity(), 250);
         motorBL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -289,14 +291,14 @@ public class Auto extends LinearOpMode {
             }
         }
         gyroStrafe(DRIVE_SPEED,3,0,.5);
-        gyroTurn(TURN_SPEED,-45,1.5);
+        gyroTurn(TURN_SPEED,-45,1);
         gyroDrive(DRIVE_SPEED,4,-45,.5);
 
 
         double angle;
         if(position == 1) {
             angle = -45;
-            gyroHold(TURN_SPEED,angle,1);
+            gyroTurn(TURN_SPEED,angle,1);
             gyroDrive(DRIVE_SPEED,30,angle,2);
             gyroDrive(DRIVE_SPEED,-10,angle,1);
         } else if(position == 2) {
@@ -306,7 +308,7 @@ public class Auto extends LinearOpMode {
             gyroDrive(DRIVE_SPEED,-10,angle,1);
         } else {
             angle = 2;
-            gyroTurn(TURN_SPEED,angle,2);
+            gyroTurn(TURN_SPEED,angle,1);
             gyroDrive(DRIVE_SPEED,25,angle,2);
             gyroDrive(DRIVE_SPEED,-7,angle,1);
         }
@@ -322,17 +324,20 @@ public class Auto extends LinearOpMode {
         gyroTurn(TURN_SPEED,-45,2);
         if(position == 1) {
             gyroStrafe(DRIVE_SPEED,10,-135,1);
-            gyroDrive(DRIVE_SPEED, -30, -135, 3);
+            gyroDrive(DRIVE_SPEED, -20, -135, 3);
+            // holder.setPosition(OPEN_POSITION);
             gyroDrive(DRIVE_SPEED, 45, -135, 2.7);
             gyroDrive(DRIVE_SPEED, 45, -135, 2.7);
         } else if(position == 0) {
             gyroStrafe(DRIVE_SPEED,10,-135,1);
-            gyroDrive(DRIVE_SPEED,-30,-135,3);
+            gyroDrive(DRIVE_SPEED,-20,-135,3);
+            // Holder.setPosition(OPEN_POSITION);
             gyroDrive(DRIVE_SPEED,45,-135,2.7);
             gyroDrive(DRIVE_SPEED,45,-135,2.7);
         } else {
             gyroStrafe(DRIVE_SPEED,10,-135,1);
-            gyroDrive(DRIVE_SPEED, -30, -135, 3);
+            gyroDrive(DRIVE_SPEED, -20, -135, 3);
+            //holder.setPosition(OPEN_POSITION);
             gyroDrive(DRIVE_SPEED, 45, -135, 2.7);
             gyroDrive(DRIVE_SPEED, 45, -135, 2.7);
         }
