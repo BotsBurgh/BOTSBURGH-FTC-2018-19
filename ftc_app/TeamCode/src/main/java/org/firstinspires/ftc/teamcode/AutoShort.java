@@ -273,6 +273,9 @@ public class AutoShort extends LinearOpMode {
             }
         }
         runtime.reset();
+        if(tfod != null) {
+            tfod.shutdown();
+        }
         while(runtime.seconds() < .5) {
             elevator.setPower(1);
         }

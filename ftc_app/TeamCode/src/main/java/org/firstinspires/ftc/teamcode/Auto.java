@@ -120,7 +120,7 @@ public class Auto extends LinearOpMode {
     static final double TURN_SPEED = 0.7;     // Nominal half speed for better accuracy.
 
     static final double HEADING_THRESHOLD = 1;      // As tight as we can make it with an integer gyro
-    static final double P_TURN_COEFF = 0.15;     // Larger is more responsive, but also less stable
+    static final double P_TURN_COEFF = 0.1;     // Larger is more responsive, but also less stable
     static final double P_DRIVE_COEFF = 0.15;     // Larger is more responsive, but also less stable
 
 
@@ -211,7 +211,20 @@ public class Auto extends LinearOpMode {
         }
         runtime.reset();
         int position=0;
-        while (runtime.seconds()<2) {
+
+        runtime.reset();
+        while(runtime.seconds() < .5) {
+            elevator.setPower(1);
+        }
+        runtime.reset();
+        while((sensorColor.red()<sensorColor.blue() || sensorColor.red()< sensorColor.green())) {
+
+            elevator.setPower(1);
+        }
+        elevator.setPower(0);
+        runtime.reset();
+
+        while (runtime.seconds()<1.5) {
             if (tfod != null) {
                 // getUpdatedRecognitions() will return null if no new information is available since
                 // the last time that call was made.
@@ -275,17 +288,6 @@ public class Auto extends LinearOpMode {
                 }
             }
         }
-        runtime.reset();
-        while(runtime.seconds() < .5) {
-            elevator.setPower(1);
-        }
-        runtime.reset();
-        while((sensorColor.red()<sensorColor.blue() || sensorColor.red()< sensorColor.green())) {
-
-            elevator.setPower(1);
-        }
-        elevator.setPower(0);
-        sleep(500);
         gyroStrafe(DRIVE_SPEED,3,0,.5);
         gyroTurn(TURN_SPEED,-45,1.5);
         gyroDrive(DRIVE_SPEED,4,-45,.5);
@@ -294,21 +296,21 @@ public class Auto extends LinearOpMode {
         double angle;
         if(position == 1) {
             angle = -45;
-            gyroTurn(TURN_SPEED,angle,2);
-            gyroDrive(DRIVE_SPEED,30,angle,2);
-            gyroDrive(DRIVE_SPEED,-8,angle,2);
+            gyroHold(TURN_SPEED,angle,1);
+            gyroDrive(DRIVE_SPEED,35,angle,1);
+            gyroDrive(DRIVE_SPEED,-10,angle,1);
         } else if(position == 2) {
             angle = 45;
-            gyroTurn(TURN_SPEED,angle,2);
-            gyroDrive(DRIVE_SPEED,30,angle,2);
-            gyroDrive(DRIVE_SPEED,-8,angle,1);
+            gyroTurn(TURN_SPEED,angle,1);
+            gyroDrive(DRIVE_SPEED,35,angle,1);
+            gyroDrive(DRIVE_SPEED,-10,angle,1);
         } else {
             angle = 0;
             gyroTurn(TURN_SPEED,angle,2);
-            gyroDrive(DRIVE_SPEED,25,angle,2);
-            gyroDrive(DRIVE_SPEED,-8,angle,2);
+            gyroDrive(DRIVE_SPEED,35,angle,1);
+            gyroDrive(DRIVE_SPEED,-10,angle,1);
         }
-        gyroTurn(TURN_SPEED,270,4);
+        gyroTurn(TURN_SPEED,-90,1);
         if(position == 1) {
             gyroDrive(DRIVE_SPEED,-50,90,3.5);
         } else if(position == 2) {
@@ -317,11 +319,11 @@ public class Auto extends LinearOpMode {
             gyroDrive(DRIVE_SPEED,-32,90,3);
         }
 
-        gyroTurn(TURN_SPEED,135,2);
-        gyroStrafe(DRIVE_SPEED,-35,135,1);
-        gyroDrive(DRIVE_SPEED,50,135,3);
-        gyroDrive(DRIVE_SPEED,-45,135,2.7);
-        gyroDrive(DRIVE_SPEED,-45,135,2.7);
+        gyroTurn(TURN_SPEED,-25,2);
+        gyroStrafe(DRIVE_SPEED,35,-135,1);
+        gyroDrive(DRIVE_SPEED,-50,-135,3);
+        gyroDrive(DRIVE_SPEED,45,-135,2.7);
+        gyroDrive(DRIVE_SPEED,45,-135,2.7);
 
 
 
