@@ -39,6 +39,7 @@ public class MecanumDrive extends LinearOpMode {
     private BNO055IMU gyro;
     static final int UP = 1;
     static final int DOWN = 0;
+    Sensor redreset;
 
     // Define class members
     DcMotor motor;
@@ -50,7 +51,7 @@ public class MecanumDrive extends LinearOpMode {
     ColorSensor sensorColor;
     DistanceSensor sensorDistance;
 
-    final private static double ARM_POWER     = 0.4;   // Base power sent to arm. Will be adjusted.
+    final private static double ARM_POWER     = 0.3;   // Base power sent to arm. Will be adjusted.
     final private static double EXTEND_POWER  = 0.6;   // Extending power/speed
     final private static int    EXTEND_TIC    = 2000;  // Extend distance (in tics)
     final private static double ARM_MAX       = 110.0; // The degrees that the arm is at it's maximum angle
@@ -64,8 +65,8 @@ public class MecanumDrive extends LinearOpMode {
     public void runOpMode() {
         DcMotor extend, arm;
         double adjusted, diff, resistance, current;
-        Sensor pot, limit, redreset;
-        int extendsteps;
+        Sensor pot, limit;
+        int extendsteps, armsteps;
 
         limit = new Sensor(hardwareMap.get(DigitalChannel.class, "lim1")); // Limit button
         pot = new Sensor(hardwareMap.get(AnalogInput.class, "pot")); // Potentiometer
@@ -79,7 +80,8 @@ public class MecanumDrive extends LinearOpMode {
 
         // Motor for tilting the arm
         arm = hardwareMap.get(DcMotor.class,"arm");
-        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Adjusting the potentiometer
@@ -91,6 +93,7 @@ public class MecanumDrive extends LinearOpMode {
         current = 0;
 
         extendsteps = 1;
+        armsteps = 1;
 
         // Init Motors
         motorFL = hardwareMap.get(DcMotor.class,   "fl");
@@ -181,13 +184,13 @@ public class MecanumDrive extends LinearOpMode {
             }
             adjusted = pot.getPot() - diff;
 
-            if (gamepad2.right_stick_y<0) {
+            if (gamepad2.right_stick_y<0.1) {
                 if (adjusted < 90) {
                     arm.setPower(.3*gamepad2.right_stick_y-.1*ext);
                 } else {
                     arm.setPower(resistance);
                 }
-            } else if (gamepad2.right_stick_y>0) {
+            } else if (gamepad2.right_stick_y>0.1) {
                 if (adjusted > 0) {
                     arm.setPower(.3*gamepad2.right_stick_y-.1*ext);
                 } else {
@@ -217,16 +220,24 @@ public class MecanumDrive extends LinearOpMode {
             adjusted = pot.getPot() - diff;
 
             // If 'a' is pressed, and the adjusted potentiometer is less than ARM_MAX
-            if (gamepad2.right_stick_y > 0.1) {
+            if (gamepad2.a) {
                 telemetry.addData("Moving arm", "down");
-                telemetry.update();
-                arm.setPower(ARM_POWER*gamepad2.right_stick_y);
+                //telemetry.update();
+                //if (armsteps > 1) {
+                //    moveExt(arm, ARM_POWER, -5);
+                //    armsteps-=1;
+                //}
+                moveArm(arm, ARM_POWER, -10);
                 current = adjusted;
                 // If 'b' is pressed, and the adjusted potentiometer is more than ARM_MIN
-            } else if (gamepad2.right_stick_y < -0.1) {
+            } else if (gamepad2.b) {
                 telemetry.addData("Moving arm", "up");
-                telemetry.update();
-                arm.setPower(-ARM_POWER*gamepad2.right_stick_y);
+                //telemetry.update();
+                //if (armsteps < 5) {
+                //    moveExt(arm, ARM_POWER, 5);
+                //    armsteps+=1;
+                //}
+                moveArm(arm, ARM_POWER, 10);
                 current = adjusted;
                 // Resist movement
             } else {
@@ -240,12 +251,12 @@ public class MecanumDrive extends LinearOpMode {
                 arm.setPower(resistance);
             }
 
-            if ((gamepad2.dpad_left) && (extendsteps > 1)) {
-                moveExt(extend, EXTEND_POWER, -EXTEND_TIC);
-                extendsteps-=1;
-            } else if ((gamepad2.dpad_right) && (extendsteps < 5)) {
+            if ((gamepad2.dpad_left)) {
                 moveExt(extend, EXTEND_POWER, EXTEND_TIC);
-                extendsteps+=1;
+                //extendsteps-=1;
+            } else if ((gamepad2.dpad_right)) {
+                moveExt(extend, EXTEND_POWER, -EXTEND_TIC);
+                //extendsteps+=1;
             } else {
                 extend.setPower(0);
             }
@@ -253,8 +264,8 @@ public class MecanumDrive extends LinearOpMode {
             arm.setPower(0);
 
             telemetry.addData("Reset", redreset.getRGB().equals("red")); // Reset the potentiometer
-            telemetry.addData("Real", pot.getPot()); // Get the angle from the potentiometer
-            telemetry.addData("Adjusted", adjusted); // Get the adjusted angle from the potentiometer
+            telemetry.addData("Arm", arm.getCurrentPosition()); // Get the angle from the potentiometer
+            telemetry.addData("Target", arm.getTargetPosition()); // Get the adjusted angle from the potentiometer
             telemetry.addData("Extended Steps", extendsteps);
 
             movement.quadMove(flPower, frPower, blPower, brPower);
@@ -286,6 +297,49 @@ public class MecanumDrive extends LinearOpMode {
                 telemetry.addData("Extend current", "Running at %7d", motor.getCurrentPosition());
                 telemetry.update();
             }
+            motor.setPower(0);
+        }
+    }
+
+    public void moveArm(DcMotor motor, double speed, int tic) {
+        int target;
+
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+            // Determine new target position, and pass to motor controller
+            target = motor.getCurrentPosition() + tic;
+            motor.setTargetPosition(target);
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+            motor.setPower(Math.abs(speed));
+
+            // keep looping while we are still active, there is time left, and both motors are running.
+            while (opModeIsActive() && (motor.isBusy()) && (runtime.seconds() < TIMEOUT) && (!redreset.getRGB().equals("red"))) {
+                // Display it for the driver.
+                telemetry.addData("Extend to", "Running to %7d", target);
+                telemetry.addData("Extend current", "Running at %7d", motor.getCurrentPosition());
+                telemetry.update();
+                if (redreset.getRGB().equals("red") && (tic >= 0)) {
+                    motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    motor.setPower(-0.4);
+                    sleep(250);
+                    motor.setPower(0);
+                    motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    break;
+                }
+            }
+            /*
+            if (redreset.getRGB().equals("red")) {
+                motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                motor.setPower(-0.4);
+                sleep(250);
+                motor.setPower(0);
+                motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            }*/
             motor.setPower(0);
         }
     }
