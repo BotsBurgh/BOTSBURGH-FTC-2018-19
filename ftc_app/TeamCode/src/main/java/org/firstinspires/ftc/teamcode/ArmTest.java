@@ -10,13 +10,13 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 
 @TeleOp(name = "Arm Test", group = "Test")
 public class ArmTest extends LinearOpMode {
-    final private static double ARM_POWER     = 0.1;  // Base power sent to arm. Will be adjusted.
-    final private static double EXTEND_POWER  = 0.6;  // Extending power/speed
-    final private static int    EXTEND_TIC    = 2000; // Extend distance (in tics)
-    final private static double ARM_MAX       = 90.0; // The degrees that the arm is at it's maximum angle
-    final private static double ARM_MIN       = -1.0; // The degrees that the arm is at it's minimum angle
-    final private static double FREEZE_THRESH = 5.0;  // The play in the arm (for preventing it from moving)
-    final private static double FREEZE_STEP   = 0.0001; // The step value for the arm freezing
+    final private static double ARM_POWER     = 0.4;   // Base power sent to arm. Will be adjusted.
+    final private static double EXTEND_POWER  = 0.6;   // Extending power/speed
+    final private static int    EXTEND_TIC    = 2000;  // Extend distance (in tics)
+    final private static double ARM_MAX       = 90.0;  // The degrees that the arm is at it's maximum angle
+    final private static double ARM_MIN       = -1.0;  // The degrees that the arm is at it's minimum angle
+    final private static double FREEZE_THRESH = 5.0;   // The play in the arm (for preventing it from moving)
+    final private static double FREEZE_STEP   = 0.001; // The step value for the arm freezing
 
     @Override
     public void runOpMode() {
