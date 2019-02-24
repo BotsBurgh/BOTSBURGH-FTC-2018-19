@@ -14,7 +14,7 @@ public class ArmTest extends LinearOpMode {
     final private static double EXTEND_POWER  = 0.6;   // Extending power/speed
     final private static int    EXTEND_TIC    = 2000;  // Extend distance (in tics)
     final private static double ARM_MAX       = 90.0;  // The degrees that the arm is at it's maximum angle
-    final private static double ARM_MIN       = -10.0;  // The degrees that the arm is at it's minimum angle
+    final private static double ARM_MIN       = -50000.0;  // The degrees that the arm is at it's minimum angle
     final private static double FREEZE_THRESH = 5.0;   // The play in the arm (for preventing it from moving)
     final private static double FREEZE_STEP   = 0.001; // The step value for the arm freezing
 
@@ -59,8 +59,14 @@ public class ArmTest extends LinearOpMode {
         telemetry.addData(">", "Press stop");
         telemetry.update();
         diff = pot.getPot();
+
+        arm.setPower(0.3);
+        sleep(250);
+        arm.setPower(0.15);
+
         // Start!
         while (opModeIsActive()) {
+            arm.setPower(0.2);
             // If the color sensor detects red, then stop all movement.
             if (redreset.getRGB().equals("red")) {
                 diff = pot.getPot()-ARM_MAX;
@@ -81,13 +87,13 @@ public class ArmTest extends LinearOpMode {
                     arm.setPower((ARM_POWER*((extendsteps*extendsteps)/2.0)*((adjusted+1)/1000)));
                 }
                 */
-                arm.setPower(ARM_POWER/3);
+                arm.setPower(ARM_POWER/1.5);
                 current = adjusted;
             // If 'b' is pressed, and the adjusted potentiometer is more than ARM_MIN
             } else if ((gamepad1.b) && (adjusted > ARM_MIN)) {
                 telemetry.addData("Moving arm", "up");
                 telemetry.update();
-                arm.setPower(-ARM_POWER/3);
+                arm.setPower(-ARM_POWER);
                 current = adjusted;
             // Resist movement
             } else {
@@ -101,24 +107,22 @@ public class ArmTest extends LinearOpMode {
                 arm.setPower(resistance);
             }
 
-            if ((gamepad1.x) && (extendsteps<4)) {
-                if ((adjusted < 15) && (adjusted > 0)) {
-                    arm.setPower(0.2);
-                    sleep(250);
-                    arm.setPower(0);
-                }
-                moveExt(extend, EXTEND_POWER, EXTEND_TIC);
-                extendsteps-=1;
-            } else if ((gamepad1.y) && (extendsteps>5)) {
+            if ((gamepad1.x) && (extendsteps > 1)) {
                 moveExt(extend, EXTEND_POWER, -EXTEND_TIC);
+                extendsteps-=1;
+            } else if ((gamepad1.y) && (extendsteps < 5)) {
+                moveExt(extend, EXTEND_POWER, EXTEND_TIC);
                 extendsteps+=1;
             } else {
                 extend.setPower(0);
             }
 
+            arm.setPower(0);
+
             telemetry.addData("Reset", redreset.getRGB().equals("red")); // Reset the potentiometer
             telemetry.addData("Real", pot.getPot()); // Get the angle from the potentiometer
             telemetry.addData("Adjusted", adjusted); // Get the adjusted angle from the potentiometer
+            telemetry.addData("Extended Steps", extendsteps);
             telemetry.update();
         }
     }
