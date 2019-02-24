@@ -222,6 +222,7 @@ public class AutoShort extends LinearOpMode {
             elevator.setPower(1);
         }
         elevator.setPower(0);
+        runtime.reset();
         while (runtime.seconds()<1.5) {
             if (tfod != null) {
                 // getUpdatedRecognitions() will return null if no new information is available since
@@ -297,19 +298,19 @@ public class AutoShort extends LinearOpMode {
             angle = -35;
             gyroTurn(TURN_SPEED,angle,1);
             gyroDrive(DRIVE_SPEED,25,angle,2);
-            gyroDrive(DRIVE_SPEED,-10,angle,2);
+            gyroDrive(DRIVE_SPEED,-7,angle,2);
         } else if(position == 2) {
             angle = 35;
             gyroTurn(TURN_SPEED,angle,1);
             gyroDrive(DRIVE_SPEED,30,angle,2);
-            gyroDrive(DRIVE_SPEED,-10,angle,1);
+            gyroDrive(DRIVE_SPEED,-7,angle,1);
         } else {
             angle = 0;
             gyroTurn(TURN_SPEED,angle,2);
             gyroDrive(DRIVE_SPEED,25,angle,2);
-            gyroDrive(DRIVE_SPEED,-10,angle,2);
+            gyroDrive(DRIVE_SPEED,-7,angle,2);
         }
-        gyroTurn(TURN_SPEED,90,3);
+        gyroTurn(TURN_SPEED,-90,3);
 
         if(position == 1) {
             gyroDrive(DRIVE_SPEED,50,90,3.5);
@@ -318,7 +319,7 @@ public class AutoShort extends LinearOpMode {
         } else {
             gyroDrive(DRIVE_SPEED,32,90,3);
         }
-        
+
         gyroTurn(TURN_SPEED,-45,3);
         gyroDrive(DRIVE_SPEED,50,135,3);
         gyroDrive(DRIVE_SPEED,-45,135,2.7);
