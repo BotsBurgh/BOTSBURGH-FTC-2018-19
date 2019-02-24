@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
+
 @TeleOp(name = "Arm Test", group = "Test")
 public class ArmTest extends LinearOpMode {
     final private static double ARM_POWER     = 0.1;  // Base power sent to arm. Will be adjusted.
@@ -15,17 +17,18 @@ public class ArmTest extends LinearOpMode {
     final private static double ARM_MIN       = 0.0;  // The degrees that the arm is at it's minimum angle
     final private static double FREEZE_THRESH = 5.0;  // The play in the arm (for preventing it from moving)
     final private static double FREEZE_STEP   = 0.0001; // The step value for the arm freezing
-    
+
     @Override
     public void runOpMode() {
         DcMotor extend, arm;
         double adjusted, diff, resistance, current;
-        Sensor pot, limit;
+        Sensor pot, limit, redreset;
         int extendsteps;
 
-        // Get hardware devices
+        // Get sensors
         limit = new Sensor(hardwareMap.get(DigitalChannel.class, "lim1")); // Limit button
         pot = new Sensor(hardwareMap.get(AnalogInput.class, "pot")); // Potentiometer
+        redreset = new Sensor(hardwareMap.get(ColorSensor.class, "reddeadreset"));
 
         // Motor for extending the arm
         extend = hardwareMap.get(DcMotor.class,"extend");
@@ -58,11 +61,12 @@ public class ArmTest extends LinearOpMode {
         //int ext = 0;
         // Start!
         while (opModeIsActive()) {
-            // If the limit switch is pressed, then reset the potentiometer to 0.
-            if (limit.isPressed()) {
+            // If the color sensor detects red, then stop all movement.
+            if (redreset.getRGB().equals("red")) {
                 diff = pot.getPot();
                 resistance = 0;
             }
+
             adjusted = pot.getPot() - diff;
 
             // If 'a' is pressed, and the adjusted potentiometer is less than ARM_MAX
@@ -138,4 +142,3 @@ public class ArmTest extends LinearOpMode {
         }
     }
 }
-

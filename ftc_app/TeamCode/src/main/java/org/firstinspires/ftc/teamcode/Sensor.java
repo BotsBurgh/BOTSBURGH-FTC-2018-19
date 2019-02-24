@@ -16,6 +16,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 package org.firstinspires.ftc.teamcode;
 
+import org.firstinspires.ftc.robotcontroller.external.samples.SensorREVColorDistance;
 import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -26,6 +27,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -46,10 +48,17 @@ public class Sensor {
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
     private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
 
+    // Color sensor configuration
+    private static final double RED_THESH =   40;
+    private static final double GREEN_THESH = 50;
+    private static final double BLUE_THESH =  40;
+
     // TODO: Initialize more sensors
     BNO055IMU gyro; // Initializes gyroscope
     AnalogInput pot; // Initializes potentiometer
     DigitalChannel button; // Initializes button
+    ColorSensor cd_color; // Initializes color sensor
+    DistanceSensor cd_dist; // Initializes distance sensor
 
     private static final String VUFORIA_KEY = "AcM0K6z/////AAABmeiIHPqExEm6uvdttqzvUM8yc5vG8YPI75H9AWdWhYDwS3uA8rxBOa8gofNaaTRkLfYpu0EcoykMACJ9vm2u9D0uBFlsxkOSGnjSGZOH7jjS2A+rm0WyOyZ7krIdfoNm+2yV+nPqoQwFApuUDVN7d/HDXq+iW1P+21ZG1ahvPeDr4zJqoHLf9AvNaUzDWssKFBshs6MXdHPH7TaNAHebpqOwVvwOriBRaM/2ffxi/676+DEGypvu5pRcTwmzkCiP3BEdFVpG8BH1jUEcZ+GQd0s59hhqKV2tJZIQwQgvzZISTGSLZHZ06Ag5tOA+m9zIW5M8UpkdWrFEO7mGBRZnMmW0Ztle8Lg+lEHd6t5lZwuS";
     private VuforiaLocalizer vuforia;
@@ -67,6 +76,28 @@ public class Sensor {
     }
     public double getPot() {
         return (POT_MAX/(Vmax-Vmin))*(pot.getVoltage()-Vmin); // Converts voltage to angle (degrees)
+    }
+
+    Sensor(ColorSensor cd) {
+        this.cd_color = cd;
+    }
+    Sensor(DistanceSensor cd) {
+        this.cd_dist = cd;
+    }
+    Sensor(ColorSensor cd, DistanceSensor cd2) {
+        this.cd_color = cd;
+        this.cd_dist  = cd2;
+    }
+    public String getRGB() {
+        if ((cd_color.red()>cd_color.blue()) && (cd_color.red()>cd_color.green()) && cd_color.red()>RED_THESH) {
+            return "red";
+        } else if ((cd_color.green()>cd_color.red()) && (cd_color.green()>cd_color.blue()) && cd_color.red()>GREEN_THESH) {
+            return "green";
+        } else if ((cd_color.blue()>cd_color.red()) && (cd_color.blue()>cd_color.green()) && cd_color.red()>BLUE_THESH) {
+            return "blue";
+        } else {
+            return "grey";
+        }
     }
 
     Sensor(DigitalChannel button) {

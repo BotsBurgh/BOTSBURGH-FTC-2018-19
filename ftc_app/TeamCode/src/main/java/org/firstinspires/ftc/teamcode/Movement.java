@@ -46,6 +46,16 @@ public class Movement {
     private double TURN_POWER  = 0.4; // How fast to turn
     private double DRIVE_POWER = 0.6; // How fast to drive
     private int SLEEP_MS = 100; // For scanning the servo
+
+    // Arm configuration
+    final private static double ARM_POWER     = 0.1;  // Base power sent to arm. Will be adjusted.
+    final private static double EXTEND_POWER  = 0.6;  // Extending power/speed
+    final private static int    EXTEND_TIC    = 2000; // Extend distance (in tics)
+    final private static double ARM_MAX       = 90.0; // The degrees that the arm is at it's maximum angle
+    final private static double ARM_MIN       = 0.0;  // The degrees that the arm is at it's minimum angle
+    final private static double FREEZE_THRESH = 5.0;  // The play in the arm (for preventing it from moving)
+    final private static double FREEZE_STEP   = 0.0001; // The step value for the arm freezing
+
     private double ARM_SERVO = 1; // The range of the servos in the arm
     private DcMotor motorFL, motorFR, motorBL, motorBR;
     private BNO055IMU gyro;
