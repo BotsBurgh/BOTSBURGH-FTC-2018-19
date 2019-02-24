@@ -13,13 +13,13 @@ public class ArmTest extends LinearOpMode {
     final private static int    EXTEND_TIC    = 2000; // Extend distance (in tics)
     final private static double ARM_MAX       = 90.0; // The degrees that the arm is at it's maximum angle
     final private static double ARM_MIN       = 0.0;  // The degrees that the arm is at it's minimum angle
-    final private static double FREEZE_THRESH = 3.0;  // The play in the arm (for preventing it from moving)
+    final private static double FREEZE_THRESH = 5.0;  // The play in the arm (for preventing it from moving)
     final private static double FREEZE_STEP   = 0.05; // The step value for the arm freezing
 
     private DcMotor extend, arm;
-    private double adjusted, diff;
+    private double adjusted, diff, resistance, current;
     private Sensor pot, limit;
-    private double resistance, current;
+    private int extendsteps;
 
     @Override
     public void runOpMode() {
@@ -46,6 +46,8 @@ public class ArmTest extends LinearOpMode {
         resistance = 0;
         current = 0;
 
+        extendsteps = 0;
+
         telemetry.addData(">", "Press start");
         telemetry.update();
 
@@ -69,13 +71,13 @@ public class ArmTest extends LinearOpMode {
                 current = adjusted;
             // If 'b' is pressed, and the adjusted potentiometer is more than ARM_MIN
             } else if ((gamepad1.b) && (adjusted > ARM_MIN)) {
-                arm.setPower(ARM_POWER);
+                arm.setPower(-ARM_POWER);
                 current = adjusted;
             // Resist movement
             } else {
-                if (adjusted - current < FREEZE_THRESH) {
+                if (((adjusted - current) < 0) && (Math.abs(adjusted-current) > FREEZE_THRESH)) {
                     resistance += FREEZE_STEP;
-                } else if (adjusted - current > FREEZE_THRESH) {
+                } else if (((adjusted - current) > 0) && (Math.abs(adjusted-current) > FREEZE_THRESH)) {
                     resistance -= FREEZE_STEP;
                 } else {
                     resistance = 0;
@@ -83,10 +85,12 @@ public class ArmTest extends LinearOpMode {
                 arm.setPower(resistance);
             }
 
-            if (gamepad1.x) {
+            if ((gamepad1.x) && (extendsteps<3)) {
                 moveExt(extend, EXTEND_POWER, EXTEND_TIC);
-            } else if (gamepad1.y) {
+                extendsteps+=1;
+            } else if ((gamepad1.y) && (extendsteps>0)) {
                 moveExt(extend, EXTEND_POWER, -EXTEND_TIC);
+                extendsteps-=1;
             } else {
                 extend.setPower(0);
             }
@@ -121,3 +125,4 @@ public class ArmTest extends LinearOpMode {
         }
     }
 }
+
