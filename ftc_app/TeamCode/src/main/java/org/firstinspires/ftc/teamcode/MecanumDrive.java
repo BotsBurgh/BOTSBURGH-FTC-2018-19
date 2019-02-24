@@ -49,45 +49,47 @@ public class MecanumDrive extends LinearOpMode {
     ColorSensor sensorColor;
     DistanceSensor sensorDistance;
 
-    final static double ARMPOWER = 0.4;
-    final static double EXTENDPOWER = 0.6;
-    final static int    EXTENDTIC = 2000;
-    DcMotor extend, arm;
-    double c=0;
-    double adjusted, diff;
-    Sensor pot, limit;
-    double resistance;
+    final private static double ARM_POWER     = 0.4;   // Base power sent to arm. Will be adjusted.
+    final private static double EXTEND_POWER  = 0.6;   // Extending power/speed
+    final private static int    EXTEND_TIC    = 2000;  // Extend distance (in tics)
+    final private static double ARM_MAX       = 90.0;  // The degrees that the arm is at it's maximum angle
+    final private static double ARM_MIN       = -50000.0;  // The degrees that the arm is at it's minimum angle
+    final private static double FREEZE_THRESH = 5.0;   // The play in the arm (for preventing it from moving)
+    final private static double FREEZE_STEP   = 0.001; // The step value for the arm freezing
 
 
     @Override
     public void runOpMode() {
-        limit = new Sensor(hardwareMap.get(DigitalChannel.class, "lim1"));
-        pot = new Sensor(hardwareMap.get(AnalogInput.class, "pot"));
+        DcMotor extend, arm;
+        double adjusted, diff, resistance, current;
+        Sensor pot, limit, redreset;
+        int extendsteps;
 
+        limit = new Sensor(hardwareMap.get(DigitalChannel.class, "lim1")); // Limit button
+        pot = new Sensor(hardwareMap.get(AnalogInput.class, "pot")); // Potentiometer
+        redreset = new Sensor(hardwareMap.get(ColorSensor.class, "reddeadreset"));
+
+        // Motor for extending the arm
         extend = hardwareMap.get(DcMotor.class,"extend");
         extend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         extend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        // Motor for tilting the arm
         arm = hardwareMap.get(DcMotor.class,"arm");
-        //arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        // Adjusting the potentiometer
         adjusted = pot.getPot();
         diff = pot.getPot();
 
+        // Resistance variable when the arm is not moving
         resistance = 0;
+        current = 0;
 
-        telemetry.addData(">", "Press start");
-        telemetry.update();
+        extendsteps = 1;
 
-        waitForStart();
-
-        telemetry.addData(">", "Press stop");
-        telemetry.update();
-        int ext = 0;
         // Init Motors
         motorFL = hardwareMap.get(DcMotor.class,"fl");
         motorFR = hardwareMap.get(DcMotor.class,"fr");
@@ -126,6 +128,15 @@ public class MecanumDrive extends LinearOpMode {
         telemetry.update();
         motor.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        telemetry.addData(">", "Press start");
+        telemetry.update();
+
+        waitForStart();
+
+        telemetry.addData(">", "Press stop");
+        telemetry.update();
+        int ext = 0;
+
         waitForStart();
         while(opModeIsActive()) {
 
@@ -133,49 +144,11 @@ public class MecanumDrive extends LinearOpMode {
             double y1 = gamepad1.left_stick_y;
             double rotation = gamepad1.right_stick_x;
 
-
-            /*
-            if(x2>.5) {
-                x1= .5;
-            } else if(x2<-.5) {
-                x1= -.5;
-            }
-            if(y2>.5) {
-                y1 = .5;
-            } else if(y2 < -.5) {
-                y1 = -.5;
-            }
-            if(rotation2 > .5) {
-                rotation = .5;
-            } else if(rotation2 < -.5) {
-                rotation = -.5;
-            }
-*/
-
             double flPower = Range.clip((y1 - x1-rotation),-.8,.8);
             double frPower = Range.clip((y1 + x1+rotation),-.8,.8);
             double blPower = Range.clip((y1 + x1-rotation),-.8,.8);
             double brPower = Range.clip((y1 - x1+rotation),-.8,.8);
 
-
-            /*
-            if(y1>.5) {
-                 flPower = .5;
-                 frPower = .5;
-                 blPower = .5;
-                 brPower = .5;
-            } else if(y1<-.5) {
-                flPower = -.5;
-                frPower = -.5;
-                blPower = -.5;
-                brPower = -.5;
-            } else {
-                flPower = 0;
-                frPower = 0;
-                blPower = 0;
-                brPower = 0;
-            }
-*/
             if(sensorColor.red()> 40 && (sensorColor.red()>sensorColor.green()) && sensorColor.red() > sensorColor.blue()) {
                 if (direction == UP && !switched) { direction = DOWN; switched = true;}
                 else if(direction == DOWN && !switched) {direction = UP; switched = true;}
@@ -194,6 +167,7 @@ public class MecanumDrive extends LinearOpMode {
                 direction = UP;
             }
             if(gamepad2.dpad_down) {direction = DOWN;}
+
             motor.setPower(power);
             if (limit.isPressed()) {
                 diff = pot.getPot();
@@ -201,7 +175,6 @@ public class MecanumDrive extends LinearOpMode {
             }
             adjusted = pot.getPot() - diff;
 
-            resistance = 0;
             if (gamepad2.right_stick_y<0) {
                 if (adjusted < 90) {
                     arm.setPower(.3*gamepad2.right_stick_y-.1*ext);
@@ -231,53 +204,62 @@ public class MecanumDrive extends LinearOpMode {
                 }
 
 
-            if (gamepad2.y) {
-                if(ext>0) {
-                    ext -=1;
-                    if(ext == 1) {
-                        while (adjusted < 45) {
-                            adjusted = pot.getPot() - diff;
+            arm.setPower(0.2);
+            // If the color sensor detects red, then stop all movement.
+            if (redreset.getRGB().equals("red")) {
+                diff = pot.getPot()-ARM_MAX;
+                resistance = 0;
+            }
+            adjusted = pot.getPot() - diff;
 
-                            arm.setPower(-.3 - .2 * ext);
-                        }
-                    }
-
-                    arm.setPower(0);
-                    moveExt(extend, EXTENDPOWER, EXTENDTIC);
-
-
-
+            // If 'a' is pressed, and the adjusted potentiometer is less than ARM_MAX
+            if (gamepad2.left_stick_y > 0.1) {
+                telemetry.addData("Moving arm", "down");
+                telemetry.update();
+                arm.setPower(ARM_POWER*gamepad2.left_stick_y);
+                current = adjusted;
+                // If 'b' is pressed, and the adjusted potentiometer is more than ARM_MIN
+            } else if (gamepad2.left_stick_y < -0.1) {
+                telemetry.addData("Moving arm", "up");
+                telemetry.update();
+                arm.setPower(-ARM_POWER*gamepad2.left_stick_y);
+                current = adjusted;
+                // Resist movement
+            } else {
+                if (((adjusted - current) < 0) && (Math.abs(adjusted-current) > FREEZE_THRESH)) {
+                    resistance -= FREEZE_STEP;
+                } else if (((adjusted - current) > 0) && (Math.abs(adjusted-current) > FREEZE_THRESH)) {
+                    resistance += FREEZE_STEP;
+                } else {
+                    resistance = 0;
                 }
-            } else if (gamepad2.x) {
-                if(ext < 4) {
-                    ext += 1;
-                    if(ext == 1)
-                    while(adjusted < 45) {
-                        adjusted = pot.getPot() - diff;
-                        arm.setPower(-.3-.2*ext);
-                    }
-                    arm.setPower(0);
-                    moveExt(extend, EXTENDPOWER, -EXTENDTIC);
+                arm.setPower(resistance);
+            }
 
-                }
+            if ((gamepad2.dpad_left) && (extendsteps > 1)) {
+                moveExt(extend, EXTEND_POWER, -EXTEND_TIC);
+                extendsteps-=1;
+            } else if ((gamepad2.dpad_right) && (extendsteps < 5)) {
+                moveExt(extend, EXTEND_POWER, EXTEND_TIC);
+                extendsteps+=1;
             } else {
                 extend.setPower(0);
             }
 
-            telemetry.addData("Reset", limit.isPressed());
-            telemetry.addData("Real", pot.getPot()); // Get the angle from the other file
-            telemetry.addData("Adjusted", adjusted);
+            arm.setPower(0);
+
+            telemetry.addData("Reset", redreset.getRGB().equals("red")); // Reset the potentiometer
+            telemetry.addData("Real", pot.getPot()); // Get the angle from the potentiometer
+            telemetry.addData("Adjusted", adjusted); // Get the adjusted angle from the potentiometer
+            telemetry.addData("Extended Steps", extendsteps);
 
             movement.quadMove(flPower, frPower, blPower, brPower);
             telemetry.addData("Back Left", motorBL.getCurrentPosition());
             telemetry.addData("Back Right",motorBR.getCurrentPosition());
             telemetry.addData("Front Left",motorFL.getCurrentPosition());
-            telemetry.addData("FRont right", motorFR.getCurrentPosition());
+            telemetry.addData("Front right", motorFR.getCurrentPosition());
             telemetry.update();
         }
-
-
-
     }
     public void moveExt(DcMotor motor, double speed, int tic) {
         int target;
@@ -294,7 +276,6 @@ public class MecanumDrive extends LinearOpMode {
 
             // keep looping while we are still active, there is time left, and both motors are running.
             while (opModeIsActive() && (motor.isBusy())) {
-
                 // Display it for the driver.
                 telemetry.addData("Extend to", "Running to %7d", target);
                 telemetry.addData("Extend current", "Running at %7d", motor.getCurrentPosition());
