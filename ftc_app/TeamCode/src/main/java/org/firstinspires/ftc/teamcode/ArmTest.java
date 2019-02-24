@@ -14,7 +14,7 @@ public class ArmTest extends LinearOpMode {
     final private static double EXTEND_POWER  = 0.6;  // Extending power/speed
     final private static int    EXTEND_TIC    = 2000; // Extend distance (in tics)
     final private static double ARM_MAX       = 90.0; // The degrees that the arm is at it's maximum angle
-    final private static double ARM_MIN       = 0.0;  // The degrees that the arm is at it's minimum angle
+    final private static double ARM_MIN       = -1.0; // The degrees that the arm is at it's minimum angle
     final private static double FREEZE_THRESH = 5.0;  // The play in the arm (for preventing it from moving)
     final private static double FREEZE_STEP   = 0.0001; // The step value for the arm freezing
 
@@ -49,7 +49,7 @@ public class ArmTest extends LinearOpMode {
         resistance = 0;
         current = 0;
 
-        extendsteps = 0;
+        extendsteps = 1;
 
         telemetry.addData(">", "Press start");
         telemetry.update();
@@ -67,7 +67,7 @@ public class ArmTest extends LinearOpMode {
                 resistance = 0;
             }
 
-            adjusted = pot.getPot() - diff;
+            adjusted = pot.getPot() - diff + 90;
 
             // If 'a' is pressed, and the adjusted potentiometer is less than ARM_MAX
             if (gamepad1.a) {
@@ -101,22 +101,22 @@ public class ArmTest extends LinearOpMode {
                 arm.setPower(resistance);
             }
 
-            if ((gamepad1.x) && (extendsteps<3)) {
+            if ((gamepad1.x) && (extendsteps<4)) {
                 if ((adjusted < 15) && (adjusted > 0)) {
                     arm.setPower(0.2);
                     sleep(250);
                     arm.setPower(0);
                 }
                 moveExt(extend, EXTEND_POWER, EXTEND_TIC);
-                extendsteps+=1;
-            } else if ((gamepad1.y) && (extendsteps>0)) {
-                moveExt(extend, EXTEND_POWER, -EXTEND_TIC);
                 extendsteps-=1;
+            } else if ((gamepad1.y) && (extendsteps>5)) {
+                moveExt(extend, EXTEND_POWER, -EXTEND_TIC);
+                extendsteps+=1;
             } else {
                 extend.setPower(0);
             }
 
-            telemetry.addData("Reset", limit.isPressed()); // Reset the button
+            telemetry.addData("Reset", redreset.getRGB().equals("red")); // Reset the potentiometer
             telemetry.addData("Real", pot.getPot()); // Get the angle from the potentiometer
             telemetry.addData("Adjusted", adjusted); // Get the adjusted angle from the potentiometer
             telemetry.update();
