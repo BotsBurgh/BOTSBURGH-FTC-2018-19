@@ -305,7 +305,7 @@ public class Auto extends LinearOpMode {
             gyroDrive(DRIVE_SPEED,25,angle,2);
             gyroDrive(DRIVE_SPEED,-10,angle,1);
         } else {
-            angle = -25;
+            angle = 2;
             gyroTurn(TURN_SPEED,angle,2);
             gyroDrive(DRIVE_SPEED,25,angle,2);
             gyroDrive(DRIVE_SPEED,-7,angle,1);
@@ -316,21 +316,23 @@ public class Auto extends LinearOpMode {
         } else if(position == 2) {
             gyroDrive(DRIVE_SPEED,-35,90,2);
         } else {
-            gyroDrive(DRIVE_SPEED,-40,90,3);
+            gyroDrive(DRIVE_SPEED,-60,90,3);
         }
 
         gyroTurn(TURN_SPEED,-45,2);
         if(position == 1) {
-            gyroDrive(DRIVE_SPEED, -40, -135, 3);
+            gyroStrafe(DRIVE_SPEED,10,-135,1);
+            gyroDrive(DRIVE_SPEED, -30, -135, 3);
             gyroDrive(DRIVE_SPEED, 45, -135, 2.7);
             gyroDrive(DRIVE_SPEED, 45, -135, 2.7);
         } else if(position == 0) {
-
-            gyroDrive(DRIVE_SPEED,-40,-135,3);
+            gyroStrafe(DRIVE_SPEED,10,-135,1);
+            gyroDrive(DRIVE_SPEED,-30,-135,3);
             gyroDrive(DRIVE_SPEED,45,-135,2.7);
             gyroDrive(DRIVE_SPEED,45,-135,2.7);
         } else {
-            gyroDrive(DRIVE_SPEED, -40, -135, 3);
+            gyroStrafe(DRIVE_SPEED,10,-135,1);
+            gyroDrive(DRIVE_SPEED, -30, -135, 3);
             gyroDrive(DRIVE_SPEED, 45, -135, 2.7);
             gyroDrive(DRIVE_SPEED, 45, -135, 2.7);
         }
