@@ -58,16 +58,15 @@ public class ArmTest extends LinearOpMode {
 
         telemetry.addData(">", "Press stop");
         telemetry.update();
-        //int ext = 0;
+        diff = pot.getPot();
         // Start!
         while (opModeIsActive()) {
             // If the color sensor detects red, then stop all movement.
             if (redreset.getRGB().equals("red")) {
-                diff = pot.getPot();
+                diff = pot.getPot()-90;
                 resistance = 0;
             }
-
-            adjusted = pot.getPot() - diff + 90;
+            adjusted = pot.getPot() - diff;
 
             // If 'a' is pressed, and the adjusted potentiometer is less than ARM_MAX
             if (gamepad1.a) {
