@@ -33,8 +33,8 @@ import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name = "Mecanum Drive", group = "Linear OpMode")
 public class MecanumDrive extends LinearOpMode {
-    static final int    CYCLE_MS    =   50;
-    private ElapsedTime runtime = new ElapsedTime();
+    static final int    CYCLE_MS = 50;
+    private ElapsedTime runtime  = new ElapsedTime();
     private DcMotor motorFL, motorFR, motorBL, motorBR;
     private BNO055IMU gyro;
     static final int UP = 1;
@@ -53,10 +53,11 @@ public class MecanumDrive extends LinearOpMode {
     final private static double ARM_POWER     = 0.4;   // Base power sent to arm. Will be adjusted.
     final private static double EXTEND_POWER  = 0.6;   // Extending power/speed
     final private static int    EXTEND_TIC    = 2000;  // Extend distance (in tics)
-    final private static double ARM_MAX       = 900.0;  // The degrees that the arm is at it's maximum angle
-    final private static double ARM_MIN       = -50000.0;  // The degrees that the arm is at it's minimum angle
+    final private static double ARM_MAX       = 110.0; // The degrees that the arm is at it's maximum angle
+    final private static double ARM_MIN       = -90.0; // The degrees that the arm is at it's minimum angle
     final private static double FREEZE_THRESH = 5.0;   // The play in the arm (for preventing it from moving)
     final private static double FREEZE_STEP   = 0.001; // The step value for the arm freezing
+    final private static double TIMEOUT       = 5.0;   // The time before the motor stops moving.
 
 
     @Override
@@ -92,18 +93,18 @@ public class MecanumDrive extends LinearOpMode {
         extendsteps = 1;
 
         // Init Motors
-        motorFL = hardwareMap.get(DcMotor.class,"fl");
-        motorFR = hardwareMap.get(DcMotor.class,"fr");
-        motorBL = hardwareMap.get(DcMotor.class,"bl");
-        motorBR = hardwareMap.get(DcMotor.class, "br");
-        gyro = hardwareMap.get(BNO055IMU.class, "gyro");
+        motorFL = hardwareMap.get(DcMotor.class,   "fl");
+        motorFR = hardwareMap.get(DcMotor.class,   "fr");
+        motorBL = hardwareMap.get(DcMotor.class,   "bl");
+        motorBR = hardwareMap.get(DcMotor.class,   "br");
+        gyro    = hardwareMap.get(BNO055IMU.class, "gyro");
 
         // get a reference to the color sensor.
         sensorColor = hardwareMap.get(ColorSensor.class, "sensor_color_distance");
         //Sensor superSensorColor = new Sensor(sensorColor);
         //superSensorColor.getRGB();
 
-        // get a reference to the distance sensor that shares the same name.
+        // get a reference to the distance sensor that shares the same name. (Because it is a REV Color/Distance sensor)
         sensorDistance = hardwareMap.get(DistanceSensor.class, "sensor_color_distance");
 
         motorFL.setDirection(DcMotor.Direction.REVERSE);
@@ -159,11 +160,13 @@ public class MecanumDrive extends LinearOpMode {
             } else {
                 switched = false;
             }
+
             if((gamepad2.left_stick_y > 0 && direction == DOWN) || gamepad2.left_stick_y < 0 && direction == UP || gamepad2.left_stick_y==0) {
                 power = 0;
             } else {
                 power = gamepad2.left_stick_y;
             }
+
             // Let User manually change direction
             if(gamepad2.dpad_up) {
                 direction = UP;
@@ -191,21 +194,19 @@ public class MecanumDrive extends LinearOpMode {
                     arm.setPower(resistance);
                 }
             } else {
-                    if(adjusted < 45) {
-                        resistance = 0;
-                        arm.setPower(resistance);
-                    }
-                    else if(adjusted < 60 ) {
-                        resistance = 0;
-                        arm.setPower(resistance);
-                    }
-                    else if(adjusted > 90) {
-                        resistance = .2;
-                        arm.setPower(resistance);
-                    }
-
+                if(adjusted < 45) {
+                    resistance = 0;
+                    arm.setPower(resistance);
                 }
-
+                else if(adjusted < 60 ) {
+                    resistance = 0;
+                    arm.setPower(resistance);
+                }
+                else if(adjusted > 90) {
+                    resistance = .2;
+                    arm.setPower(resistance);
+                }
+            }
 
             arm.setPower(0.2);
             // If the color sensor detects red, then stop all movement.
@@ -275,15 +276,17 @@ public class MecanumDrive extends LinearOpMode {
             motor.setTargetPosition(target);
 
             // reset the timeout time and start motion.
+            runtime.reset();
             motor.setPower(Math.abs(speed));
 
             // keep looping while we are still active, there is time left, and both motors are running.
-            while (opModeIsActive() && (motor.isBusy())) {
+            while (opModeIsActive() && (motor.isBusy()) && (runtime.seconds() < TIMEOUT)) {
                 // Display it for the driver.
                 telemetry.addData("Extend to", "Running to %7d", target);
                 telemetry.addData("Extend current", "Running at %7d", motor.getCurrentPosition());
                 telemetry.update();
             }
+            motor.setPower(0);
         }
     }
 }

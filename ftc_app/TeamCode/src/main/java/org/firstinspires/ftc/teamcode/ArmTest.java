@@ -147,6 +147,7 @@ public class ArmTest extends LinearOpMode {
                 telemetry.addData("Extend current", "Running at %7d", motor.getCurrentPosition());
                 telemetry.update();
             }
+            motor.setPower(0);
         }
     }
 }
