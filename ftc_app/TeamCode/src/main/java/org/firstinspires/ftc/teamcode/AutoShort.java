@@ -209,7 +209,20 @@ public class AutoShort extends LinearOpMode {
         }
         runtime.reset();
         int position=0;
-        while (runtime.seconds()<3) {
+
+        runtime.reset();
+        if(tfod != null) {
+            tfod.shutdown();
+        }
+        while(runtime.seconds() < .5) {
+            elevator.setPower(1);
+        }
+        runtime.reset();
+        while((sensorColor.red()<sensorColor.blue() || sensorColor.red()< sensorColor.green())) {
+            elevator.setPower(1);
+        }
+        elevator.setPower(0);
+        while (runtime.seconds()<1.5) {
             if (tfod != null) {
                 // getUpdatedRecognitions() will return null if no new information is available since
                 // the last time that call was made.
@@ -241,6 +254,7 @@ public class AutoShort extends LinearOpMode {
                         }
 
                     }
+
                     if(updatedRecognitions.size() == 3) {
                         int goldMineralX = -1;
                         int silverMineral1X = -1;
@@ -258,10 +272,10 @@ public class AutoShort extends LinearOpMode {
                         if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
                             if ((goldMineralX < silverMineral1X) && goldMineralX < silverMineral2X) {
                                 telemetry.addData("Gold Mineral Position", "Left");
-                                position = 1;
+                                position = 2;
                             } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
                                 telemetry.addData("Gold Mineral Position", "Right");
-                                position = 2;
+                                position = 1;
                             } else {
                                 telemetry.addData("Gold Mineral Position", "Center");
                                 position = 0;
@@ -272,19 +286,7 @@ public class AutoShort extends LinearOpMode {
                 }
             }
         }
-        runtime.reset();
-        if(tfod != null) {
-            tfod.shutdown();
-        }
-        while(runtime.seconds() < .5) {
-            elevator.setPower(1);
-        }
-        runtime.reset();
-        while((sensorColor.red()<sensorColor.blue() || sensorColor.red()< sensorColor.green())) {
-            elevator.setPower(1);
-        }
-        elevator.setPower(0);
-        sleep(500);
+
         gyroStrafe(DRIVE_SPEED,3,0,.5);
         gyroTurn(TURN_SPEED,-45,1.5);
         gyroDrive(DRIVE_SPEED,4,-45,.5);
@@ -307,15 +309,16 @@ public class AutoShort extends LinearOpMode {
             gyroDrive(DRIVE_SPEED,25,angle,2);
             gyroDrive(DRIVE_SPEED,-10,angle,2);
         }
-        gyroStrafe(TURN_SPEED,50,4,3);
+        gyroTurn(TURN_SPEED,90,3);
 
         if(position == 1) {
-            gyroStrafe(DRIVE_SPEED,50,90,3.5);
+            gyroDrive(DRIVE_SPEED,50,90,3.5);
         } else if(position == 2) {
-            gyroStrafe(DRIVE_SPEED,25,90,2);
+            gyroDrive(DRIVE_SPEED,25,90,2);
         } else {
-            gyroStrafe(DRIVE_SPEED,32,90,3);
+            gyroDrive(DRIVE_SPEED,32,90,3);
         }
+        
         gyroTurn(TURN_SPEED,-45,3);
         gyroDrive(DRIVE_SPEED,50,135,3);
         gyroDrive(DRIVE_SPEED,-45,135,2.7);
