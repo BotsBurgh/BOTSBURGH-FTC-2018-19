@@ -195,7 +195,7 @@ public class Auto extends LinearOpMode {
         composeTelemetry();
         telemetry.update();
         runtime.reset();
-        holder.setPosition(0);
+        holder.setPosition(.2);
         waitForStart();
 
         gyro.startAccelerationIntegration(new Position(), new Velocity(), 250);
@@ -325,19 +325,19 @@ public class Auto extends LinearOpMode {
         if(position == 1) {
             gyroStrafe(DRIVE_SPEED,10,-135,1);
             gyroDrive(DRIVE_SPEED, -20, -135, 3);
-             holder.setPosition(90);
+             holder.setPosition(.7);
             gyroDrive(DRIVE_SPEED, 45, -135, 2.7);
             gyroDrive(DRIVE_SPEED, 45, -135, 2.7);
         } else if(position == 0) {
             gyroStrafe(DRIVE_SPEED,10,-135,1);
             gyroDrive(DRIVE_SPEED,-20,-135,3);
-            holder.setPosition(90);
+            holder.setPosition(.7);
             gyroDrive(DRIVE_SPEED,45,-135,2.7);
             gyroDrive(DRIVE_SPEED,45,-135,2.7);
         } else {
             gyroStrafe(DRIVE_SPEED,10,-135,1);
             gyroDrive(DRIVE_SPEED, -20, -135, 3);
-            holder.setPosition(90);
+            holder.setPosition(.7);
             gyroDrive(DRIVE_SPEED, 45, -135, 2.7);
             gyroDrive(DRIVE_SPEED, 45, -135, 2.7);
         }
@@ -768,7 +768,7 @@ public class Auto extends LinearOpMode {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minimumConfidence = .7;
+        tfodParameters.minimumConfidence = .6;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
 
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
