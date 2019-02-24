@@ -15,14 +15,14 @@ public class ArmTest extends LinearOpMode {
     final private static double ARM_MIN       = 0.0;  // The degrees that the arm is at it's minimum angle
     final private static double FREEZE_THRESH = 5.0;  // The play in the arm (for preventing it from moving)
     final private static double FREEZE_STEP   = 0.0001; // The step value for the arm freezing
-
-    private DcMotor extend, arm;
-    private double adjusted, diff, resistance, current;
-    private Sensor pot, limit;
-    private int extendsteps;
-
+    
     @Override
     public void runOpMode() {
+        DcMotor extend, arm;
+        double adjusted, diff, resistance, current;
+        Sensor pot, limit;
+        int extendsteps;
+
         // Get hardware devices
         limit = new Sensor(hardwareMap.get(DigitalChannel.class, "lim1")); // Limit button
         pot = new Sensor(hardwareMap.get(AnalogInput.class, "pot")); // Potentiometer
@@ -66,12 +66,20 @@ public class ArmTest extends LinearOpMode {
             adjusted = pot.getPot() - diff;
 
             // If 'a' is pressed, and the adjusted potentiometer is less than ARM_MAX
-            if ((gamepad1.a) && (adjusted < ARM_MAX)) {
-                arm.setPower(-(ARM_POWER*((extendsteps*extendsteps)/2.0)*(adjusted/500)));
+            if (gamepad1.a) {
+                if (adjusted < ARM_MAX/2.0) {
+                    arm.setPower(-(ARM_POWER*((extendsteps*extendsteps)/2.0)*(adjusted/500)));
+                } else if (adjusted < ARM_MAX) {
+                    arm.setPower(-(ARM_POWER*((extendsteps*extendsteps)/2.0)*(adjusted/1000)));
+                }
                 current = adjusted;
             // If 'b' is pressed, and the adjusted potentiometer is more than ARM_MIN
             } else if ((gamepad1.b) && (adjusted > ARM_MIN)) {
-                arm.setPower((ARM_POWER*((extendsteps*extendsteps)/2.0)*(adjusted/500)));
+                if (adjusted > ARM_MAX/2.0) {
+                    arm.setPower(ARM_POWER+(extendsteps*0.05));
+                } else if (adjusted < ARM_MAX/2.0) {
+                    arm.setPower(ARM_POWER+(extendsteps*0.01));
+                }
                 current = adjusted;
             // Resist movement
             } else {
