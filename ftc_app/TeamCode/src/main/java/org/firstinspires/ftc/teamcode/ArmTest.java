@@ -8,13 +8,13 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 @TeleOp(name = "Arm Test", group = "Test")
 public class ArmTest extends LinearOpMode {
-    final private static double ARM_POWER     = 0.4;  // Base power sent to arm. Will be adjusted.
+    final private static double ARM_POWER     = 0.1;  // Base power sent to arm. Will be adjusted.
     final private static double EXTEND_POWER  = 0.6;  // Extending power/speed
     final private static int    EXTEND_TIC    = 2000; // Extend distance (in tics)
     final private static double ARM_MAX       = 90.0; // The degrees that the arm is at it's maximum angle
     final private static double ARM_MIN       = 0.0;  // The degrees that the arm is at it's minimum angle
     final private static double FREEZE_THRESH = 5.0;  // The play in the arm (for preventing it from moving)
-    final private static double FREEZE_STEP   = 0.05; // The step value for the arm freezing
+    final private static double FREEZE_STEP   = 0.0001; // The step value for the arm freezing
 
     private DcMotor extend, arm;
     private double adjusted, diff, resistance, current;
@@ -67,18 +67,18 @@ public class ArmTest extends LinearOpMode {
 
             // If 'a' is pressed, and the adjusted potentiometer is less than ARM_MAX
             if ((gamepad1.a) && (adjusted < ARM_MAX)) {
-                arm.setPower(ARM_POWER);
+                arm.setPower(-(ARM_POWER*(extendsteps*extendsteps)));
                 current = adjusted;
             // If 'b' is pressed, and the adjusted potentiometer is more than ARM_MIN
             } else if ((gamepad1.b) && (adjusted > ARM_MIN)) {
-                arm.setPower(-ARM_POWER);
+                arm.setPower(ARM_POWER);
                 current = adjusted;
             // Resist movement
             } else {
                 if (((adjusted - current) < 0) && (Math.abs(adjusted-current) > FREEZE_THRESH)) {
-                    resistance += FREEZE_STEP;
-                } else if (((adjusted - current) > 0) && (Math.abs(adjusted-current) > FREEZE_THRESH)) {
                     resistance -= FREEZE_STEP;
+                } else if (((adjusted - current) > 0) && (Math.abs(adjusted-current) > FREEZE_THRESH)) {
+                    resistance += FREEZE_STEP;
                 } else {
                     resistance = 0;
                 }
@@ -86,6 +86,11 @@ public class ArmTest extends LinearOpMode {
             }
 
             if ((gamepad1.x) && (extendsteps<3)) {
+                if ((adjusted < 15) && (adjusted > 0)) {
+                    arm.setPower(0.2);
+                    sleep(250);
+                    arm.setPower(0);
+                }
                 moveExt(extend, EXTEND_POWER, EXTEND_TIC);
                 extendsteps+=1;
             } else if ((gamepad1.y) && (extendsteps>0)) {
