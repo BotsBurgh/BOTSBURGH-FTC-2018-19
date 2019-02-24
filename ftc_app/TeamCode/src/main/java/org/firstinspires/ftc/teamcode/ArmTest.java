@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 
 @TeleOp(name = "Arm Test", group = "Test")
 public class ArmTest extends LinearOpMode {
-    final private static double ARM_POWER     = 0.4;   // Base power sent to arm. Will be adjusted.
+    final private static double ARM_POWER     = 0.75;   // Base power sent to arm. Will be adjusted.
     final private static double EXTEND_POWER  = 0.6;   // Extending power/speed
     final private static int    EXTEND_TIC    = 2000;  // Extend distance (in tics)
     final private static double ARM_MAX       = 90.0;  // The degrees that the arm is at it's maximum angle
@@ -38,7 +38,8 @@ public class ArmTest extends LinearOpMode {
 
         // Motor for tilting the arm
         arm = hardwareMap.get(DcMotor.class,"arm");
-        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Adjusting the potentiometer
@@ -87,14 +88,16 @@ public class ArmTest extends LinearOpMode {
                     arm.setPower((ARM_POWER*((extendsteps*extendsteps)/2.0)*((adjusted+1)/1000)));
                 }
                 */
-                arm.setPower(ARM_POWER/1.5);
-                current = adjusted;
+                //arm.setPower(ARM_POWER/1.5);
+                //current = adjusted;
+                moveArm(arm, ARM_POWER, 2000);
             // If 'b' is pressed, and the adjusted potentiometer is more than ARM_MIN
             } else if ((gamepad1.b) && (adjusted > ARM_MIN)) {
                 telemetry.addData("Moving arm", "up");
-                telemetry.update();
-                arm.setPower(-ARM_POWER);
-                current = adjusted;
+                //telemetry.update();
+                //arm.setPower(-ARM_POWER);
+                //current = adjusted;
+                moveArm(arm, ARM_POWER, -2000);
             // Resist movement
             } else {
                 if (((adjusted - current) < 0) && (Math.abs(adjusted-current) > FREEZE_THRESH)) {
@@ -128,6 +131,30 @@ public class ArmTest extends LinearOpMode {
     }
 
     public void moveExt(DcMotor motor, double speed, int tic) {
+        int target;
+
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+            // Determine new target position, and pass to motor controller
+            target = motor.getCurrentPosition() + tic;
+            motor.setTargetPosition(target);
+
+            // reset the timeout time and start motion.
+            motor.setPower(Math.abs(speed));
+
+            // keep looping while we are still active, there is time left, and both motors are running.
+            while (opModeIsActive() && (motor.isBusy())) {
+                // Display it for the driver.
+                telemetry.addData("Extend to", "Running to %7d", target);
+                telemetry.addData("Extend current", "Running at %7d", motor.getCurrentPosition());
+                telemetry.update();
+            }
+            motor.setPower(0);
+        }
+    }
+
+    public void moveArm(DcMotor motor, double speed, int tic) {
         int target;
 
         // Ensure that the opmode is still active
