@@ -67,11 +67,8 @@ public class ArmTest extends LinearOpMode {
 
             // If 'a' is pressed, and the adjusted potentiometer is less than ARM_MAX
             if ((gamepad1.a) && (adjusted < ARM_MAX)) {
-<<<<<<< HEAD
                 arm.setPower(-(ARM_POWER*(extendsteps*extendsteps)));
-=======
                 arm.setPower(-ARM_POWER);
->>>>>>> 4fcc5889ceccb8eace4069ee6da3cf5902133ccd
                 current = adjusted;
             // If 'b' is pressed, and the adjusted potentiometer is more than ARM_MIN
             } else if ((gamepad1.b) && (adjusted > ARM_MIN)) {
