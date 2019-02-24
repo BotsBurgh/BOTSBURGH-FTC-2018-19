@@ -49,7 +49,7 @@ public class Sensor {
     private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
 
     // Color sensor configuration
-    private static final double RED_THESH =   40;
+    private static final double RED_THESH =   30;
     private static final double GREEN_THESH = 50;
     private static final double BLUE_THESH =  40;
 

@@ -321,14 +321,25 @@ public class MecanumDrive extends LinearOpMode {
                 telemetry.addData("Extend to", "Running to %7d", target);
                 telemetry.addData("Extend current", "Running at %7d", motor.getCurrentPosition());
                 telemetry.update();
+                if (redreset.getRGB().equals("red") && (tic >= 0)) {
+                    motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    motor.setPower(-0.4);
+                    sleep(250);
+                    motor.setPower(0);
+                    motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    break;
+                }
             }
+            /*
             if (redreset.getRGB().equals("red")) {
                 motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                motor.setPower(-0.1);
-                sleep(50);
+                motor.setPower(-0.4);
+                sleep(250);
                 motor.setPower(0);
                 motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            }
+                motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            }*/
             motor.setPower(0);
         }
     }
