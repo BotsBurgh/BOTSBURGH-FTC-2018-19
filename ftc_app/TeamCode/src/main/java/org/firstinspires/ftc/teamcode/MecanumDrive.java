@@ -27,6 +27,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -52,7 +53,7 @@ public class MecanumDrive extends LinearOpMode {
     final private static double ARM_POWER     = 0.4;   // Base power sent to arm. Will be adjusted.
     final private static double EXTEND_POWER  = 0.6;   // Extending power/speed
     final private static int    EXTEND_TIC    = 2000;  // Extend distance (in tics)
-    final private static double ARM_MAX       = 90.0;  // The degrees that the arm is at it's maximum angle
+    final private static double ARM_MAX       = 900.0;  // The degrees that the arm is at it's maximum angle
     final private static double ARM_MIN       = -50000.0;  // The degrees that the arm is at it's minimum angle
     final private static double FREEZE_THRESH = 5.0;   // The play in the arm (for preventing it from moving)
     final private static double FREEZE_STEP   = 0.001; // The step value for the arm freezing
@@ -99,6 +100,8 @@ public class MecanumDrive extends LinearOpMode {
 
         // get a reference to the color sensor.
         sensorColor = hardwareMap.get(ColorSensor.class, "sensor_color_distance");
+        //Sensor superSensorColor = new Sensor(sensorColor);
+        //superSensorColor.getRGB();
 
         // get a reference to the distance sensor that shares the same name.
         sensorDistance = hardwareMap.get(DistanceSensor.class, "sensor_color_distance");
@@ -153,7 +156,6 @@ public class MecanumDrive extends LinearOpMode {
                 if (direction == UP && !switched) { direction = DOWN; switched = true;}
                 else if(direction == DOWN && !switched) {direction = UP; switched = true;}
                 telemetry.addData("Can Go UP", direction == UP);
-
             } else {
                 switched = false;
             }
@@ -165,8 +167,9 @@ public class MecanumDrive extends LinearOpMode {
             // Let User manually change direction
             if(gamepad2.dpad_up) {
                 direction = UP;
+            } else if(gamepad2.dpad_down) {
+                direction = DOWN;
             }
-            if(gamepad2.dpad_down) {direction = DOWN;}
 
             motor.setPower(power);
             if (limit.isPressed()) {
@@ -213,16 +216,16 @@ public class MecanumDrive extends LinearOpMode {
             adjusted = pot.getPot() - diff;
 
             // If 'a' is pressed, and the adjusted potentiometer is less than ARM_MAX
-            if (gamepad2.left_stick_y > 0.1) {
+            if (gamepad2.right_stick_y > 0.1) {
                 telemetry.addData("Moving arm", "down");
                 telemetry.update();
-                arm.setPower(ARM_POWER*gamepad2.left_stick_y);
+                arm.setPower(ARM_POWER*gamepad2.right_stick_y);
                 current = adjusted;
                 // If 'b' is pressed, and the adjusted potentiometer is more than ARM_MIN
-            } else if (gamepad2.left_stick_y < -0.1) {
+            } else if (gamepad2.right_stick_y < -0.1) {
                 telemetry.addData("Moving arm", "up");
                 telemetry.update();
-                arm.setPower(-ARM_POWER*gamepad2.left_stick_y);
+                arm.setPower(-ARM_POWER*gamepad2.right_stick_y);
                 current = adjusted;
                 // Resist movement
             } else {
