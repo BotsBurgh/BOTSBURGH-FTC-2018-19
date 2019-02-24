@@ -297,33 +297,43 @@ public class Auto extends LinearOpMode {
         if(position == 1) {
             angle = -45;
             gyroHold(TURN_SPEED,angle,1);
-            gyroDrive(DRIVE_SPEED,35,angle,1);
+            gyroDrive(DRIVE_SPEED,30,angle,2);
             gyroDrive(DRIVE_SPEED,-10,angle,1);
         } else if(position == 2) {
-            angle = 45;
+            angle = 25;
             gyroTurn(TURN_SPEED,angle,1);
-            gyroDrive(DRIVE_SPEED,35,angle,1);
+            gyroDrive(DRIVE_SPEED,25,angle,2);
             gyroDrive(DRIVE_SPEED,-10,angle,1);
         } else {
-            angle = 0;
+            angle = -25;
             gyroTurn(TURN_SPEED,angle,2);
-            gyroDrive(DRIVE_SPEED,35,angle,1);
-            gyroDrive(DRIVE_SPEED,-10,angle,1);
+            gyroDrive(DRIVE_SPEED,25,angle,2);
+            gyroDrive(DRIVE_SPEED,-7,angle,1);
         }
         gyroTurn(TURN_SPEED,-90,1);
         if(position == 1) {
             gyroDrive(DRIVE_SPEED,-50,90,3.5);
         } else if(position == 2) {
-            gyroDrive(DRIVE_SPEED,-25,90,2);
+            gyroDrive(DRIVE_SPEED,-35,90,2);
         } else {
-            gyroDrive(DRIVE_SPEED,-32,90,3);
+            gyroDrive(DRIVE_SPEED,-40,90,3);
         }
 
-        gyroTurn(TURN_SPEED,-25,2);
-        gyroStrafe(DRIVE_SPEED,35,-135,1);
-        gyroDrive(DRIVE_SPEED,-50,-135,3);
-        gyroDrive(DRIVE_SPEED,45,-135,2.7);
-        gyroDrive(DRIVE_SPEED,45,-135,2.7);
+        gyroTurn(TURN_SPEED,-45,2);
+        if(position == 1) {
+            gyroDrive(DRIVE_SPEED, -40, -135, 3);
+            gyroDrive(DRIVE_SPEED, 45, -135, 2.7);
+            gyroDrive(DRIVE_SPEED, 45, -135, 2.7);
+        } else if(position == 0) {
+
+            gyroDrive(DRIVE_SPEED,-40,-135,3);
+            gyroDrive(DRIVE_SPEED,45,-135,2.7);
+            gyroDrive(DRIVE_SPEED,45,-135,2.7);
+        } else {
+            gyroDrive(DRIVE_SPEED, -40, -135, 3);
+            gyroDrive(DRIVE_SPEED, 45, -135, 2.7);
+            gyroDrive(DRIVE_SPEED, 45, -135, 2.7);
+        }
 
 
 
@@ -751,7 +761,9 @@ public class Auto extends LinearOpMode {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfodParameters.minimumConfidence = .7;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
     }
 
