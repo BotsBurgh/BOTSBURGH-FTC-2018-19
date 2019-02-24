@@ -14,7 +14,7 @@ public class ArmTest extends LinearOpMode {
     final private static double EXTEND_POWER  = 0.6;   // Extending power/speed
     final private static int    EXTEND_TIC    = 2000;  // Extend distance (in tics)
     final private static double ARM_MAX       = 90.0;  // The degrees that the arm is at it's maximum angle
-    final private static double ARM_MIN       = -1.0;  // The degrees that the arm is at it's minimum angle
+    final private static double ARM_MIN       = -10.0;  // The degrees that the arm is at it's minimum angle
     final private static double FREEZE_THRESH = 5.0;   // The play in the arm (for preventing it from moving)
     final private static double FREEZE_STEP   = 0.001; // The step value for the arm freezing
 
@@ -63,30 +63,31 @@ public class ArmTest extends LinearOpMode {
         while (opModeIsActive()) {
             // If the color sensor detects red, then stop all movement.
             if (redreset.getRGB().equals("red")) {
-                diff = pot.getPot()-90;
+                diff = pot.getPot()-ARM_MAX;
                 resistance = 0;
             }
             adjusted = pot.getPot() - diff;
 
             // If 'a' is pressed, and the adjusted potentiometer is less than ARM_MAX
             if (gamepad1.a) {
+                telemetry.addData("Moving arm", "down");
+                telemetry.update();
+                /*
                 if (adjusted < ARM_MAX/2.0) {
-                    telemetry.addData("Moving arm", "up");
-                    telemetry.update();
                     arm.setPower((ARM_POWER*((extendsteps*extendsteps)/2.0)*((adjusted+1)/500)));
                 } else if (adjusted < ARM_MAX) {
                     telemetry.addData("Moving arm", "down");
                     telemetry.update();
                     arm.setPower((ARM_POWER*((extendsteps*extendsteps)/2.0)*((adjusted+1)/1000)));
                 }
+                */
+                arm.setPower(ARM_POWER/3);
                 current = adjusted;
             // If 'b' is pressed, and the adjusted potentiometer is more than ARM_MIN
             } else if ((gamepad1.b) && (adjusted > ARM_MIN)) {
-                if (adjusted > ARM_MAX/2.0) {
-                    arm.setPower(-(ARM_POWER+(extendsteps*0.05)));
-                } else if (adjusted < ARM_MAX/2.0) {
-                    arm.setPower(-(ARM_POWER+(extendsteps*0.01)));
-                }
+                telemetry.addData("Moving arm", "up");
+                telemetry.update();
+                arm.setPower(-ARM_POWER/3);
                 current = adjusted;
             // Resist movement
             } else {
