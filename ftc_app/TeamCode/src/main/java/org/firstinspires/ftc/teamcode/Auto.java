@@ -195,7 +195,7 @@ public class Auto extends LinearOpMode {
         composeTelemetry();
         telemetry.update();
         runtime.reset();
-        // holder.setPosition(INITIAL_POSITION);
+        holder.setPosition(0);
         waitForStart();
 
         gyro.startAccelerationIntegration(new Position(), new Velocity(), 250);
@@ -325,19 +325,19 @@ public class Auto extends LinearOpMode {
         if(position == 1) {
             gyroStrafe(DRIVE_SPEED,10,-135,1);
             gyroDrive(DRIVE_SPEED, -20, -135, 3);
-            // holder.setPosition(OPEN_POSITION);
+             holder.setPosition(90);
             gyroDrive(DRIVE_SPEED, 45, -135, 2.7);
             gyroDrive(DRIVE_SPEED, 45, -135, 2.7);
         } else if(position == 0) {
             gyroStrafe(DRIVE_SPEED,10,-135,1);
             gyroDrive(DRIVE_SPEED,-20,-135,3);
-            // Holder.setPosition(OPEN_POSITION);
+            holder.setPosition(90);
             gyroDrive(DRIVE_SPEED,45,-135,2.7);
             gyroDrive(DRIVE_SPEED,45,-135,2.7);
         } else {
             gyroStrafe(DRIVE_SPEED,10,-135,1);
             gyroDrive(DRIVE_SPEED, -20, -135, 3);
-            //holder.setPosition(OPEN_POSITION);
+            holder.setPosition(90);
             gyroDrive(DRIVE_SPEED, 45, -135, 2.7);
             gyroDrive(DRIVE_SPEED, 45, -135, 2.7);
         }
