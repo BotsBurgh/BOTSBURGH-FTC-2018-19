@@ -103,7 +103,7 @@ public class VuForiaNav extends LinearOpMode {
      *
      * Vuforia license keys are always 380 characters long, and look as if they contain mostly
      * random data. As an example, here is a example of a fragment of a valid key:
-     *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
+     *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqZuHxoGlfOOI2dRzKS4T0hQ8kT ...
      * Once you've obtained a license key, copy the string from the Vuforia web site
      * and paste it in to your code on the next line, between the double quotes.
      */
@@ -128,7 +128,8 @@ public class VuForiaNav extends LinearOpMode {
      */
     VuforiaLocalizer vuforia;
 
-    @Override public void runOpMode() {
+    @Override
+    public void runOpMode() {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
          * We can pass Vuforia the handle to a camera preview resource (on the RC phone);
@@ -307,5 +308,7 @@ public class VuForiaNav extends LinearOpMode {
             }
             telemetry.update();
         }
+        // Move to a location. We want to go to 30,30
+
     }
 }
