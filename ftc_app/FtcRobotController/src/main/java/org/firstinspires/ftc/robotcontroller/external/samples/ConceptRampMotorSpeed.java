@@ -32,9 +32,7 @@ package org.firstinspires.ftc.robotcontroller.external.samples;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 /**
  * This OpMode ramps a single motor speed up and down repeatedly until Stop is pressed.
@@ -61,8 +59,6 @@ public class ConceptRampMotorSpeed extends LinearOpMode {
     DcMotor motor;
     double  power   = 0;
     boolean rampUp  = true;
-    ColorSensor sensorColor;
-    DistanceSensor sensorDistance;
 
 
     @Override

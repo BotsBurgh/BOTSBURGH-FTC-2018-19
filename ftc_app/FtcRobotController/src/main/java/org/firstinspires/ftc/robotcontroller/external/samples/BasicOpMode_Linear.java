@@ -59,45 +59,10 @@ public class BasicOpMode_Linear extends LinearOpMode {
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
 
-
-
-
-
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-
-
-        // P Path
-        // Center
-        // go forward about  2 foot
-        // go backward 1 foot
-        // Turn io degrees left
-        // if left, then turn 45 left
-        // if right, then turn 45 right
-        // move foreward
-        // move backward
-        // if left then turn 135 right
-        // if right then turn 45 right
-        // Move three feet forward
-        // Turn 45 degrees left
-        // Drive 5 feet forward
-
-        // Move 7 feet. backwards
-
-        //  D path
-        // Go forward 2 feet
-        // if left, then turn 45 left
-        // if right, then turn 45 right
-        // move foreward
-        // move backward
-        // if left then turn 135 right
-        // if right then turn 45 right
-        // Turn 90 degrees to left
-        // Turn 45 degrees to right
-        // go forward 5 feet
-        // go bakcward 7 feet.
 
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
